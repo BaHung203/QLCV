@@ -38,7 +38,7 @@ namespace WebApp.Controllers
             return View(danhSach);
         }
         // Hàm tạo file byte
-        public byte[] GetBytesFromFilePath(string filePath)
+        public static byte[] GetBytesFromFilePath(string filePath)
         {
             // Kiểm tra file có tồn tại không
             if (!System.IO.File.Exists(filePath))
@@ -225,6 +225,7 @@ namespace WebApp.Controllers
             var fileName = cv?.TepDinhKem?.Substring(cv.TepDinhKem.LastIndexOf('\\') + 1);
             return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
-
+        
     }
+    
 }

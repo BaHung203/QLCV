@@ -1,11 +1,14 @@
 @model WebApp.Models.CongVanDen
 @{
-    ViewData["Title"] = "Chi tiết công văn đến";
+    ViewData["Title"] = "Chi tiết công văn đi";
     Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
+
 <div class="container-fluid">
     <div class="container-fluid mt-4">
-        <h2 class="mb-4">Chi tiết công văn đến</h2>
+        <div class="text-center">
+        <h2 class="mb-4">Chi tiết công văn đi</h2>
+        </div>
         <table id="myTable" class="table table-bordered">
             <tr>
                 <th>Số hiệu</th>
@@ -36,9 +39,30 @@
                 <td>
                     @if (!string.IsNullOrEmpty(Model.TepDinhKem))
                     {
-                        <a href="@Url.Content("~/CongVanDen/download/" + Model.ID)" target="_blank">
-                            @Model.TepDinhKem.Substring(Model.TepDinhKem.LastIndexOf('\\') + 1)
-                        </a>
+                        var fileName = Model.TepDinhKem.Substring(Model.TepDinhKem.LastIndexOf('\\') + 1);
+                        var fileExtension = fileName.Substring(fileName.LastIndexOf('.') + 1).ToLower();
+                        var fileType = fileExtension switch {
+                            "pdf" => "pdf",
+                            "doc" => "doc",
+                            "docx" => "docx",
+                            "jpg" or "jpeg" or "png" => "image",
+                            _ => "other"
+                        };
+                        
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">@fileName</span>
+                            <a href="@Url.Content("~/CongVanDen/download/" + Model.ID)" class="btn btn-sm btn-outline-primary me-2" download>
+                                <i class="fas fa-download"></i> Tải xuống
+                            </a>
+                            @if (fileType != "other")
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-success btn-preview" 
+                                        data-file="@Model.TepDinhKem"
+                                        data-type="@fileType">
+                                    <i class="fas fa-eye"></i> Xem chi tiết file
+                                </button>
+                            }
+                        </div>
                     }
                     else
                     {
@@ -52,32 +76,128 @@
             </tr>
         </table>
         <div class="text-end">
-            <button class="btn btn-danger" onclick="exportPDF()">Xuất PDF</button>
             <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
-</div> 
+</div>
+
+<!-- Modal Xem trước -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Xem trước tệp đính kèm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="pdfViewer" style="display: none; width: 100%; height: 70vh;">
+                    <iframe id="pdfIframe" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                <div id="docViewer" style="display: none; width: 100%; height: 70vh;">
+                    <iframe id="docIframe" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                <div id="imageViewer" style="display: none; text-align: center;">
+                    <img id="imagePreview" style="max-width: 100%; max-height: 70vh;" />
+                </div>
+                <div id="unsupportedViewer" style="display: none;">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Không hỗ trợ xem trước định dạng này. Vui lòng tải xuống để xem.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
     <link rel="stylesheet" href="~/assets/css/styles.min.css" />
-<script>
-  const { jsPDF } = window.jspdf;
 
-function exportPDF() {
-  const doc = new jsPDF();
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-preview').on('click', function () {
+                const filePath = $(this).data('file');
+                const fileType = $(this).data('type');
+                previewFile(filePath, fileType);
+            });
+        });
 
-  doc.addFileToVFS("DejaVuSans.ttf", font_data); // font_data lấy từ file .js generate
-  doc.addFont("DejaVuSans.ttf", "DejaVuSans", "normal");
-  doc.setFont("DejaVuSans");
+        function previewFile(filePath, fileType = pdf) {
+            // Ẩn tất cả các viewer trước
+            $('#pdfViewer, #docViewer, #imageViewer, #unsupportedViewer').hide();
+            
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            // Thay toàn bộ \ thành / để xử lý dễ hơn
+            
+            
+            if (fileType === 'pdf') {
+                
+                const normalizedPath = filePath.replaceAll("\\", "/"); // Chuyển dấu \ thành /
 
-  doc.autoTable({
-    html: '#myTable',
-    styles: {
-      font: "DejaVuSans"
-    }
-  });
+                // Cắt phần đường dẫn từ "File" trở đi
+                const fileIndex = normalizedPath.indexOf("/File/");
+                if (fileIndex !== -1) {
+                    fileName = normalizedPath.substring(fileIndex); // Lấy từ /File/ đến hết
+                } else {
+                    fileName = normalizedPath.split("/").pop(); // Nếu không tìm thấy /File/, lấy tên file
+                }
 
-  doc.save("du_lieu.pdf");
+                let src = window.location.origin + fileName;
+                $('#pdfIframe').attr('src', src);
+                $('#pdfViewer').show();
+                $('#previewModalLabel').text('Xem trước PDF');
+                modal.show();
+            } 
+            else if (fileType === 'doc' || fileType === 'docx') {
+               const normalizedPath = filePath.replaceAll("\\", "/"); // Chuyển dấu \ thành /
+
+                // Cắt phần đường dẫn từ "File" trở đi
+                let fileName;
+                const fileIndex = normalizedPath.indexOf("/File/");
+                if (fileIndex !== -1) {
+                    fileName = normalizedPath.substring(fileIndex); // Lấy từ /File/ đến hết
+                } else {
+                    fileName = normalizedPath.split("/").pop(); // Nếu không tìm thấy /File/, lấy tên file
+                }
+
+                // Kiểm tra định dạng file
+                const isDocFile = fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx');
+                if (!isDocFile) {
+                    alert('File không phải định dạng .doc hoặc .docx!');
+                    return;
+                }
+
+                // Tạo URL cho Google Docs Viewer
+                const fileUrl = window.location.origin + fileName;
+                const googleDocsUrl = 'https://docs.google.com/gview?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
+
+                // Cập nhật iframe và giao diện
+                $('#docIframe').attr('src', googleDocsUrl).on('error', () => {
+                    alert('Không thể tải file. Vui lòng kiểm tra đường dẫn hoặc kết nối.');
+                });
+                $('#docViewer').show();
+                $('#previewModalLabel').text('Xem trước Word');
+                modal.show();
+            } 
+            else if (fileType === 'image') {
+                const fileIndex = normalizedPath.indexOf("/File/");
+                if (fileIndex !== -1) {
+                    fileName = normalizedPath.substring(fileIndex); // Lấy từ /File/ đến hết
+                } else {
+                    fileName = normalizedPath.split("/").pop(); // Nếu không tìm thấy /File/, lấy tên file
+                }
+                let src = window.location.origin + fileName;
+                $('#imagePreview').attr('src', src);
+                $('#imageViewer').show();
+                $('#previewModalLabel').text('Xem trước hình ảnh');
+                modal.show();
+            } 
+            else {
+                $('#unsupportedViewer').show();
+                $('#previewModalLabel').text('Không hỗ trợ xem trước');
+                modal.show();
+            }
+        }
+    </script>
 }
-
-
-</script>
-
