@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - QLCV</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/assets/css/styles.css" /> *@
+    <link rel="stylesheet" href="~/assets/css/styles.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+</head>
+<style>
+</style>
+<body>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/assets/js/sidebarmenu.js"></script>
+    <script src="~/assets/js/app.min.js"></script>
+        <!-- Sidebar -->
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+      <!-- Sidebar scroll-->
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+          <a href="./index.html" class="text-nowrap logo-img">
+            <img src="~/assets/images/logos/dark-logo.svg" width="180" alt="" />
+          </a>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="ti ti-x fs-8"></i>
+          </div>
+        </div>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+          
+          <ul id="sidebarnav">
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+              <span class="hide-menu">Home</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/Home/Index" aria-expanded="false">
+                <span>
+                  <i class="ti ti-layout-dashboard"></i>
+                </span>
+                <span class="hide-menu">Trang chủ</span>
+              </a>
+            </li>
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+              <span class="hide-menu">Manage</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/CongVanDen/Index" aria-expanded="false">
+                <span>
+                  <i class="ti ti-article"></i>
+                </span>
+                <span class="hide-menu">Công văn đến</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/CongVanDi/Index" aria-expanded="false">
+                <span>
+                  <i class="ti ti-alert-circle"></i>
+                </span>
+                <span class="hide-menu">Công văn đi</span>
+              </a>
+            </li>
+            <li class="sidebar-item dropdown">
+              <a href="#" class="sidebar-link dropdown-toggle" data-toggle="dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                  <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                </svg>
+                <span class="hide-menu">Quản lý</span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="./ui-alerts.html">Danh mục</a></li>
+                <li><a class="dropdown-item" href="./ui-users.html">Người dùng</a></li>
+                <li><a class="dropdown-item" href="./ui-settings.html">Cài đặt</a></li>
+                <!-- Thêm các mục khác nếu cần -->
+              </ul>
+            </li>
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+              <span class="hide-menu">AUTH</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/Login/login" aria-expanded="false">
+                <span>
+                  <i class="ti ti-login"></i>
+                </span>
+                <span class="hide-menu">Đăng xuất</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="./authentication-register.html" aria-expanded="false">
+                <span>
+                  <i class="ti ti-user-plus"></i>
+                </span>
+                <span class="hide-menu">Đăng ký</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      
+      <!-- End Sidebar scroll-->
+    </aside>
+    <!--  Sidebar End -->
+    <!--  Main wrapper -->
+    <div class="flex-1 flex flex-col overflow-y-auto body-wrapper">
+            <!-- Header -->
+      <header class="bg-white shadow-sm">
+          <div class="flex justify-between items-center px-6 py-3">
+              <div class="flex items-center">
+                  @* <button id="sidebar-toggle" class="lg:hidden mr-2 text-gray-600 hover:text-gray-900">
+                      @* <i class="fas fa-bars"></i> 
+                  </button> *@
+              </div>
+              <div class="flex items-center space-x-4">
+                  <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                  <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                    <li class="nav-item dropdown">
+                      <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <img src="~/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                        <div class="message-body">
+                          <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                            <i class="ti ti-user fs-6"></i>
+                            <p class="mb-0 fs-3">My Profile</p>
+                          </a>
+                          <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                            <i class="ti ti-mail fs-6"></i>
+                            <p class="mb-0 fs-3">My Account</p>
+                          </a>
+                          <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                            <i class="ti ti-list-check fs-6"></i>
+                            <p class="mb-0 fs-3">My Task</p>
+                          </a>
+                          <a href="/Login/login" class="btn btn-outline-primary mx-3 mt-2 d-block">Đăng xuất</a>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+          </div>
+      </header>
+            
+            <!-- Page Content -->
+      <main class="flex-1 p-6 overflow-y-auto">
+        @RenderBody()
+          <!-- Breadcrumb -->
+            
+      </main>
+      
+          <!-- Footer -->
+      <footer class="bg-white p-4 border-t border-gray-200 text-center text-sm text-gray-600">
+          <p>&copy; 2025 Quản lý Công văn. All rights reserved.</p>
+      </footer>
+    </div>
+</div>
+
+    <!-- Footer -->
+    
+            <!-- End of Footer -->
+    @await RenderSectionAsync("Scripts", required: false)
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('documentChart');
+            if(ctx) {
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                        datasets: [{
+                            label: 'Công văn đến',
+                            data: [12, 19, 10, 15, 22, 30],
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            tension: 0.3
+                        }, {
+                            label: 'Công văn đi',
+                            data: [8, 15, 7, 12, 17, 25],
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+            }
+        });
+</script> 
+
+</body>
+</html>

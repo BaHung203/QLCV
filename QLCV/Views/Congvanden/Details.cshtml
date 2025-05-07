@@ -1,0 +1,83 @@
+@model WebApp.Models.CongVanDen
+@{
+    ViewData["Title"] = "Chi tiết công văn đến";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+<div class="container-fluid">
+    <div class="container-fluid mt-4">
+        <h2 class="mb-4">Chi tiết công văn đến</h2>
+        <table id="myTable" class="table table-bordered">
+            <tr>
+                <th>Số hiệu</th>
+                <td>@Model.SoHieu</td>
+            </tr>
+            <tr>
+                <th>Ngày đi</th>
+                <td>@Model.NgayDen.ToString("dd-MM-yyyy")</td>
+            </tr>
+            <tr>
+                <th>ID Nơi nhận</th>
+                <td>@Model.IdNoiPhatHanh</td>
+            </tr>
+            <tr>
+                <th>ID Loại công văn</th>
+                <td>@Model.IdLoaiCongVan</td>
+            </tr>
+            <tr>
+                <th>Vị trí</th>
+                <td>@Model.Vitri</td>
+            </tr>
+            <tr>
+                <th>Nội dung</th>
+                <td>@Model.NoiDung</td>
+            </tr>
+            <tr>
+                <th>Tệp đính kèm</th>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.TepDinhKem))
+                    {
+                        <a href="@Url.Content("~/CongVanDen/download/" + Model.ID)" target="_blank">
+                            @Model.TepDinhKem.Substring(Model.TepDinhKem.LastIndexOf('\\') + 1)
+                        </a>
+                    }
+                    else
+                    {
+                        <span>Không có tệp</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <th>Nội dung tệp</th>
+                <td>@Model.NoiDungTep</td>
+            </tr>
+        </table>
+        <div class="text-end">
+            <button class="btn btn-danger" onclick="exportPDF()">Xuất PDF</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+</div> 
+    <link rel="stylesheet" href="~/assets/css/styles.min.css" />
+<script>
+  const { jsPDF } = window.jspdf;
+
+function exportPDF() {
+  const doc = new jsPDF();
+
+  doc.addFileToVFS("DejaVuSans.ttf", font_data); // font_data lấy từ file .js generate
+  doc.addFont("DejaVuSans.ttf", "DejaVuSans", "normal");
+  doc.setFont("DejaVuSans");
+
+  doc.autoTable({
+    html: '#myTable',
+    styles: {
+      font: "DejaVuSans"
+    }
+  });
+
+  doc.save("du_lieu.pdf");
+}
+
+
+</script>
+

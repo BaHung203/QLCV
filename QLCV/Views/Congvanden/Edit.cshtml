@@ -1,0 +1,72 @@
+@model WebApp.ModelUI.CongVanDenCreateModel
+@{
+   ViewData["Title"] = "Edit";
+}
+
+<div class="modal fade" id="modalEditCongVan" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form method="post" asp-action="Edit" enctype="multipart/form-data">
+        <input type="hidden" id="editId" name="Id" value="@Model?.ID" />
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditLabel">Cập Nhật Công Văn Đi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="editSoHieu" class="form-label">Số hiệu</label>
+              <input type="text" class="form-control" id="editSoHieu" name="SoHieu" value="">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="NgayDen" class="form-label">Ngày đến</label>
+              <input type="date" class="form-control" id="NgayDen" name="NgayDen">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="IdNoiPhatHanh" class="form-lable">Nơi phát hành</label>
+              <select type="text" class="form-control" id="IdNoiPhatHanh" name="IdNoiPhatHanh" placeholder="--Chọn nơi nhận--" >
+                <option value="" selected disabled hidden>--Chọn nơi phát hành--</option>
+                <option value="1">Phòng Khám</option>
+                <option value="2">Bộ Y Tế</option>
+                <option value="3">Bộ Công an</option>
+                <option value="4">UBND Tỉnh TP Hồ Chí Minh</option>
+                <option value="5">Sở Giáo dục và Đào tạo TP.HCM</option>
+              </select>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="IdLoaiCongVan" class="form-lable">Loại công văn</label>
+              <select type="text" class="form-control" id="IdLoaiCongVan" name="IdLoaiCongVan" placeholder="--Chọn công văn--">
+                <option value="" selected disabled hidden>--Chọn công văn--</option>
+                <option value="1">Công văn đi</option>
+                <option value="2">Công văn đến</option>
+                <option value="3">Công văn họp</option>
+              </select>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="editViTri" class="form-label">Vị trí</label>
+              <input type="text" class="form-control" id="editViTri" name="Vitri">
+            </div>
+             <div class="mb-3 col-md-6">
+              <label for="TepDinhKem" class="form-label">Tệp đính kèm</label>
+              <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="form-control" id="TepDinhKem" name="TepDinhKem">
+              <small id="fileNameDisplay" class="form-text text-muted"></small>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="editNoiDung" class="form-label">Nội dung</label>
+              <textarea class="form-control" id="editNoiDung" name="NoiDung"></textarea>
+            </div>
+           
+            <div class="mb-3 col-md-6">
+              <label for="editNoiDungTep" class="form-label">Ghi chú tệp</label>
+              <textarea class="form-control" id="editNoiDungTep" name="GhiChuTep"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Cập nhật</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

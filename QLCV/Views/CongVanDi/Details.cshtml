@@ -1,0 +1,161 @@
+@model WebApp.Models.CongVanDi
+@{
+    ViewData["Title"] = "Chi tiết công văn đi";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+
+<div class="container-fluid">
+    <div class="container-fluid mt-4">
+        <h2 class="mb-4">Chi tiết công văn đi</h2>
+        <table id="myTable" class="table table-bordered">
+            <tr>
+                <th>Số hiệu</th>
+                <td>@Model.SoHieu</td>
+            </tr>
+            <tr>
+                <th>Ngày đi</th>
+                <td>@Model.NgayDi.ToString("dd-MM-yyyy")</td>
+            </tr>
+            <tr>
+                <th>ID Nơi nhận</th>
+                <td>@Model.IdNoiNhan</td>
+            </tr>
+            <tr>
+                <th>ID Loại công văn</th>
+                <td>@Model.IdLoaiCongVan</td>
+            </tr>
+            <tr>
+                <th>Vị trí</th>
+                <td>@Model.Vitri</td>
+            </tr>
+            <tr>
+                <th>Nội dung</th>
+                <td>@Model.NoiDung</td>
+            </tr>
+            <tr>
+                <th>Tệp đính kèm</th>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.TepDinhKem))
+                    {
+                        var fileName = Model.TepDinhKem.Substring(Model.TepDinhKem.LastIndexOf('\\') + 1);
+                        var fileExtension = fileName.Substring(fileName.LastIndexOf('.') + 1).ToLower();
+                        var fileType = fileExtension switch {
+                            "pdf" => "pdf",
+                            "doc" => "doc",
+                            "docx" => "docx",
+                            "jpg" or "jpeg" or "png" => "image",
+                            _ => "other"
+                        };
+                        
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">@fileName</span>
+                            <a href="@Url.Content("~/CongVanDi/download/" + Model.ID)" class="btn btn-sm btn-outline-primary me-2" download>
+                                <i class="fas fa-download"></i> Tải xuống
+                            </a>
+                            @if (fileType != "other")
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-success btn-preview" 
+                                        data-file="@Model.TepDinhKem"
+                                        data-type="@fileType">
+                                    <i class="fas fa-eye"></i> Xem trước
+                                </button>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span>Không có tệp</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <th>Nội dung tệp</th>
+                <td>@Model.NoiDungTep</td>
+            </tr>
+        </table>
+        <div class="text-end">
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xem trước -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Xem trước tệp đính kèm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="pdfViewer" style="display: none; width: 100%; height: 70vh;">
+                    <iframe id="pdfIframe" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                <div id="docViewer" style="display: none; width: 100%; height: 70vh;">
+                    <iframe id="docIframe" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                <div id="imageViewer" style="display: none; text-align: center;">
+                    <img id="imagePreview" style="max-width: 100%; max-height: 70vh;" />
+                </div>
+                <div id="unsupportedViewer" style="display: none;">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Không hỗ trợ xem trước định dạng này. Vui lòng tải xuống để xem.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <link rel="stylesheet" href="~/assets/css/styles.min.css" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-preview').on('click', function () {
+                const filePath = $(this).data('file');
+                const fileType = $(this).data('type');
+                previewFile(filePath, fileType);
+            });
+        });
+
+        function previewFile(filePath, fileType = pdf) {
+            // Ẩn tất cả các viewer trước
+            $('#pdfViewer, #docViewer, #imageViewer, #unsupportedViewer').hide();
+            
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            // Thay toàn bộ \ thành / để xử lý dễ hơn
+            
+            
+            if (fileType === 'pdf') {
+                $('#pdfIframe').attr('src', filePath);
+                $('#pdfViewer').show();
+                $('#previewModalLabel').text('Xem trước PDF');
+                modal.show();
+            } 
+            else if (fileType === 'doc' || fileType === 'docx') {
+                const normalizedPath = filePath.replaceAll("\\", "/");
+            // Cắt tên file sau từ cuối
+                const googleDocsUrl = 'https://docs.google.com/gview?url=' + 
+                    encodeURIComponent(window.location.origin + filePath) + '&embedded=true';
+                $('#docIframe').attr('src', googleDocsUrl);
+                $('#docViewer').show();
+                $('#previewModalLabel').text('Xem trước Word');
+                modal.show();
+            } 
+            else if (fileType === 'image') {
+                $('#imagePreview').attr('src', filePath);
+                $('#imageViewer').show();
+                $('#previewModalLabel').text('Xem trước hình ảnh');
+                modal.show();
+            } 
+            else {
+                $('#unsupportedViewer').show();
+                $('#previewModalLabel').text('Không hỗ trợ xem trước');
+                modal.show();
+            }
+        }
+    </script>
+}

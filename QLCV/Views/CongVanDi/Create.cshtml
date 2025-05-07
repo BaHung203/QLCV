@@ -1,0 +1,66 @@
+@model WebApp.ModelUI.CongVanDiCreateModel
+
+<div class="modal fade" id="modalCongVan" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form method="post" asp-action="Create"  enctype="multipart/form-data">
+        <div class="modal-header text-center">
+          <h5 class="modal-title w-100 text-center" id="modalLabel">Thêm Công Văn Đi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="SoHieu" class="form-label">Số hiệu</label>
+              <input type="text" class="form-control" id="SoHieu" name="SoHieu" value="@Model?.SoHieu">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="NgayDi" class="form-label">Ngày đi</label>
+              <input type="date" placeholder="dd-MM-yyyy" class="form-control" id="NgayDi" name="NgayDi" value="@Model?.NgayDi.ToString("dd-MM-yyyy")">
+            </div>
+
+            <div class="mb-3 col-md-6">
+              <label for="IdNoiNhan" class="form-lable">Nơi nhận</label>
+              <select type="text" class="form-control" id="IdNoiNhan" name="IdNoiNhan" placeholder="--Chọn nơi nhận--" value="@Model?.IdNoiNhan">
+                <option value="1">--Chọn nơi nhận--</option>
+                <option value="1">Sở Tài Nguyên Môi Trường</option>
+                <option value="2">UBND Quận 1</option>
+                <option value="3">Phòng Hành Chính</option>
+              </select>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="IdLoaiCongVan" class="form-lable">Loại công văn</label>
+              <select type="text" class="form-control" id="IdLoaiCongVan" name="IdLoaiCongVan" placeholder="--Chọn công văn--" value="@Model?.IdLoaiCongVan">
+                <option value="1">--Chọn công văn--</option>
+                <option value="1">Công văn đi</option>
+                <option value="2">Công văn đến</option>
+                <option value="3">Công văn họp</option>
+              </select>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="Vitri" class="form-label">Vị trí</label>
+              <input type="text" class="form-control" id="Vitri" name="Vitri" value="@Model?.Vitri">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="file" class="form-label">Tệp đính kèm</label>
+              <input accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" type="file" class="form-control" id="file" name="file">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="NoiDung" class="form-label">Nội dung</label>
+              <textarea class="form-control" id="NoiDung" name="NoiDung">@Model?.NoiDung</textarea>
+            </div>
+            
+            <div class="mb-3 col-md-6">
+              <label for="NoiDungTep" class="form-label">Nội dung ghi chú cho tệp</label>
+              <textarea class="form-control" id="NoiDungTep" name="NoiDungTep">@Model?.NoiDungTep</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Lưu</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+namespace WebApp.ModelUI
+{
+    public class CongVanDenUpdateModel : CongVanDenCreateModel
+    {
+
+    }
+}

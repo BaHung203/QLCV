@@ -1,0 +1,279 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modernize Free</title>
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item {
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown-content {
+            display: none;
+            padding-left: 1rem;
+        }
+        
+        .dropdown.open .dropdown-content {
+            display: block;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="p-4 flex items-center justify-between">
+            <div class="flex-shrink-0 bg-blue-100 p-3 rounded-md">
+                <i class="fas fa-inbox text-blue-500 text-xl"></i>
+            </div>
+            <div class="flex-1 ml-4 text-right">
+                <p class="text-sm font-medium text-gray-500">Công văn đến</p>
+                <p class="text-2xl font-semibold text-gray-800">0</p>
+            </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
+            <a href="/CongVanDen/Index" class="flex items-center justify-center text-sm text-blue-500 hover:text-blue-600 font-medium">
+                <span>Xem chi tiết</span>
+                <i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="p-4 flex items-center justify-between">
+            <div class="flex-shrink-0 bg-green-100 p-3 rounded-md">
+                <i class="fas fa-paper-plane text-green-500 text-xl"></i>
+            </div>
+            <div class="flex-1 ml-4 text-right">
+                <p class="text-sm font-medium text-gray-500">Công văn đi</p>
+                <p class="text-2xl font-semibold text-gray-800">0</p>
+            </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
+            <a href="/CongVanDi/Index" class="flex items-center justify-center text-sm text-green-500 hover:text-green-600 font-medium">
+                <span>Xem chi tiết</span>
+                <i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="p-4 flex items-center justify-between">
+            <div class="flex-shrink-0 bg-yellow-100 p-3 rounded-md">
+                <i class="fas fa-clock text-yellow-500 text-xl"></i>
+            </div>
+            <div class="flex-1 ml-4 text-right">
+                <p class="text-sm font-medium text-gray-500">Chưa xử lý</p>
+                <p class="text-2xl font-semibold text-gray-800">0</p>
+            </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
+            <a href="/CongVanDen/Index" class="flex items-center justify-center text-sm text-yellow-500 hover:text-yellow-600 font-medium">
+                <span>Xem chi tiết</span>
+                <i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="p-4 flex items-center justify-between">
+            <div class="flex-shrink-0 bg-indigo-100 p-3 rounded-md">
+                <i class="fas fa-chart-line text-indigo-500 text-xl"></i>
+            </div>
+            <div class="flex-1 ml-4 text-right">
+                <p class="text-sm font-medium text-gray-500">Báo cáo & Thống kê</p>
+                <p class="text-2xl font-semibold text-indigo-500">Xem</p>
+            </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
+            <a href="pages/reports.html" class="flex items-center justify-center text-sm text-indigo-500 hover:text-indigo-600 font-medium">
+                <span>Truy cập ngay</span>
+                <i class="fas fa-file-pdf ml-1 text-xs"></i>
+            </a>
+        </div>
+    </div>
+</div> 
+
+<!-- Chart and Quick Access -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Chart -->
+    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h2 class="font-semibold text-lg text-gray-800">
+                <i class="fas fa-chart-line text-indigo-500 mr-2"></i>
+                Thống kê công văn theo tháng
+            </h2>
+        </div>
+        <div class="p-4">
+            <div class="h-72">
+                <canvas id="documentChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Access -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h2 class="font-semibold text-lg text-gray-800">
+                <i class="fas fa-bolt text-amber-500 mr-2"></i>
+                Truy cập nhanh
+            </h2>
+        </div>
+        <div class="p-4">
+            <a href="pages/user-management.html" class="mb-3 flex items-center p-3 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
+                <i class="fas fa-users mr-3"></i>
+                <span>Quản lý người dùng</span>
+            </a>
+            <a href="pages/categories.html" class="mb-3 flex items-center p-3 bg-amber-50 text-amber-700 rounded-md hover:bg-amber-100 transition-colors">
+                <i class="fas fa-list-ul mr-3"></i>
+                <span>Quản lý danh mục</span>
+            </a>
+            <a href="#" class="mb-3 flex items-center p-3 bg-indigo-50 text-indigo-700 rounded-md hover:bg-indigo-100 transition-colors">
+                <i class="fas fa-search mr-3"></i>
+                <span>Tìm kiếm nâng cao</span>
+            </a>
+            <a href="#" class="flex items-center p-3 bg-emerald-50 text-emerald-700 rounded-md hover:bg-emerald-100 transition-colors">
+                <i class="fas fa-file-export mr-3"></i>
+                <span>Xuất báo cáo</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Documents -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Recent Incoming Documents -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+            <h2 class="font-semibold text-lg text-gray-800 flex items-center">
+                <i class="fas fa-inbox text-blue-500 mr-2"></i>
+                Công văn đến gần đây
+            </h2>
+            <a href="/CongVanDen/Create" class="text-sm text-blue-500 hover:text-blue-700">Xem tất cả</a>
+        </div>
+        <!-- Table content remains the same -->
+    </div>
+    
+    <!-- Recent Outgoing Documents -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+            <h2 class="font-semibold text-lg text-gray-800 flex items-center">
+                <i class="fas fa-paper-plane text-green-500 mr-2"></i>
+                Công văn đi gần đây
+            </h2>
+            <a href="pages/outgoing-docs.html" class="text-sm text-green-500 hover:text-green-700">Xem tất cả</a>
+        </div>
+        <!-- Table content remains the same -->
+    </div>
+</div>
+
+<!-- Quick Actions and Statistics -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Quick Actions -->
+    <div class="col-span-2 bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h2 class="font-semibold text-lg text-gray-800">Hành động nhanh</h2>
+        </div>
+        <!-- Quick Actions content remains the same -->
+    </div>
+    
+    <!-- Statistics Summary -->
+    <div class="col-span-1 bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+            <h2 class="font-semibold text-lg text-gray-800">Thống kê</h2>
+            <a href="pages/reports.html" class="text-sm text-indigo-500 hover:text-indigo-700">Xem chi tiết</a>
+        </div>
+        <!-- Statistics content remains the same -->
+    </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('documentChart');
+            if(ctx) {
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                        datasets: [{
+                            label: 'Công văn đến',
+                            data: [12, 19, 10, 15, 22, 30],
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            tension: 0.3
+                        }, {
+                            label: 'Công văn đi',
+                            data: [8, 15, 7, 12, 17, 25],
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+            }
+        });
+</script> 
+
+ 
