@@ -1,122 +1,213 @@
 @using System.Text.Json
 @using System.Text.Json.Serialization
-@model IEnumerable<WebApp.Models.CongVanDen>
+@model WebApp.ModelUI.PagedResult<WebApp.ModelUI.CongVanDetailModel>
 
 @{
-    ViewData["Title"] = "Danh sách công văn đến";
+    ViewData[index: "Title"] = "Danh sách công văn đến";
     Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
 
-    <div class="container-fluid">
-        <div class="container-fluid">
-          <div class="card">
-            <div class="card-body">
-              <div class="row mb-1">
+<style>
+        
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .sidebar {
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-item {
+        border-radius: 0.375rem;
+        transition: all 0.2s ease;
+    }
+    
+    .sidebar-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .dropdown-content {
+        display: none;
+        padding-left: 1rem;
+    }
+    
+    .dropdown.open .dropdown-content {
+        display: block;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    /* === THANH CUỘN ĐẸP CHO BẢNG === */
+    .table-responsive {
+        /* Đảm bảo bảng có thể cuộn ngang */
+        overflow-x: auto;
+        overflow-y: hidden; /* Ẩn cuộn dọc nếu không cần */
+        -webkit-overflow-scrolling: touch; /* Mượt trên mobile */
+    }
+
+        /* WebKit (Chrome, Edge, Safari) */
+        .table-responsive::-webkit-scrollbar {
+            height: 10px; /* Chiều cao thanh cuộn ngang */
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #a0a0a0;
+            border-radius: 10px;
+            border: 2px solid #f1f1f1;
+        }
+
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: #707070;
+            }
+
+    /* Firefox */
+    .table-responsive {
+        scrollbar-width: thin;
+        scrollbar-color: #a0a0a0 #f1f1f1;
+    }
+</style>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-1">
                 <div class="col-md-3">
-                  <div class="input-group rounded">
-                    <input type="search" class="form-control" id="searchInput" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-                    <span class="input-group-text border-0 btn btn-primary" id="search-addon">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                      </svg>
-                    </span>
-                  </div>
+                    <div class="input-group rounded">
+                        <input type="search" class="form-control" id="searchInput" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                        <span class="input-group-text border-0 btn btn-primary" id="search-addon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                        </span>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                  
                 </div>
                 <div class="col-md-3 text-end">
-                  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCongVan">
-                    Thêm công văn
-                  </button>
-
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCongVan">
+                        Thêm công văn
+                    </button>
                 </div>
-              </div>
-              <div>
-                <table class="table table-bordered rounded ">
-                  <thead>
-                    <tr class="text-center bg-light">
-                      <th scope="col">STT</th>
-                      <th scope="col">Số hiệu</th>
-                      <th scope="col">Ngày đi</th>
-                      <th scope="col">id nơi phát hành</th>
-                      <th scope="col">id loại công văn</th>
-                      <th scope="col">Vị trí</th>
-                      <th scope="col">Nội dung</th>
-                      <th scope="col">Tệp đính kèm</th>
-                      <th scope="col"> Nội dung tệp</th>
-                      <th scope="col">Trạng thái</th>
-                    </tr>
-                  </thead>
-                  <tbody class="congVanTable">
-                    @{
-                        int STT = 1;
-                    }
-                    @foreach (var item in Model)
-                    {
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered rounded">
+                    <thead>
+                        <tr class="text-center bg-light">
+                            <th scope="col" class="sticky-col-1">STT</th>
+                            <th scope="col" class="sticky-col-2">Số hiệu</th>
+                            <th scope="col" class="sticky-col-3">Ngày đến</th>
+                            <th scope="col">Nơi phát hành</th>
+                            <th scope="col">Vị trí</th>
+                            <th scope="col">Nội dung</th>
+                            <th scope="col">Tệp đính kèm</th>
+                            <th scope="col">Nội dung tệp</th>
+                            <th scope="col" class="sticky-column">Trạng thái</th> <!-- Sticky column -->
+                        </tr>
+                    </thead>
+                    <tbody class="congVanTable">
+                        @{
+                            int STT = 1;
+                        }
+                        @foreach (WebApp.ModelUI.CongVanDetailModel item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-center sticky-col-1">@STT</td> <!-- Hiển thị số thứ tự -->
+                                <td class="soHieu sticky-col-2">@item.SoHieu</td>
+                                <td class="ngayDen sticky-col-3">@item.Ngay.ToString("dd/MM/yyyy")</td>
+                                <td class="IdNoiPhatHanh">@item.NoiPhatHanh</td>
+                                <td class="viTri">@item.ViTri</td>
+                                <td class="noiDung">@item.NoiDung</td>
+                                <td class="Tep">
+                                    @if (!string.IsNullOrEmpty(item.TepDinhKem))
+                                    {
+                                        <a href="@Url.Content("~/congVanDen/download/" + item.ID)" target="_blank">@item.TepDinhKem.Substring(item.TepDinhKem.LastIndexOf('\\') + 1)</a>
+                                    }
+                                </td>
+                                <td class="noiDungTep">@item.NoiDungTep</td>
+                                <td class="text-center d-flex sticky-column"> <!-- Sticky column -->
+                                    <button class="btn btn-sm btn-primary btn-edit btnEdit" data-noiphathanh="@item.IdNoiPhatHanh" data-item="@JsonSerializer.Serialize(item)" data-id="@item.ID">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn btn-sm btn-info btn-Details" data-id="@item.ID">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-delete" data-id="@item.ID">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            STT++;
+                        }
+                    </tbody>
+                    <tfoot>
                         <tr>
-                            <td class="text-center">@STT</td> <!-- Hiển thị số thứ tự -->
-                            <td class="soHieu">@item.SoHieu</td>
-                            <td class="ngayDi">@item.NgayDen.ToString("dd-MM-yyyy")</td>
-                            <td class="idNoiPhatHanh">@item.IdNoiPhatHanh</td>
-                            <td class="idLoaiCongVan">@item.IdLoaiCongVan</td>
-                            <td class="viTri">@item.Vitri</td>
-                            <td class="noiDung">@item.NoiDung</td>
-                            
-                            <td class="Tep">
-                                @if (!string.IsNullOrEmpty(item.TepDinhKem))
-                                {
-                                    <a href="@Url.Content("~/CongVanDen/download/" + item.ID)" target="_blank">@item.TepDinhKem.Substring(item.TepDinhKem.LastIndexOf('\\') + 1)</a>
-                                }
-                            </td>
-                            <td class="noiDungTep">@item.NoiDungTep</td>
-                            <td class="text-center d-flex">
-                                <button class="btn btn-sm btn-primary btn-edit btnEdit" data-item="@JsonSerializer.Serialize(item)" data-id="@item.ID">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                                  </svg>
-                                </button>
-                                <a class="btn btn-sm btn-info btn-Details" data-id="@item.ID">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
-                                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
-                                  </svg>
-                                </a>
-                                <button class="btn btn-sm btn-danger btn-delete" data-id="@item.ID">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-                                  </svg>
-                                </button>
+                            <td colspan="10" class="text-left">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-right">
+                                        <!-- Nút "Trước" -->
+                                        <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                                            <a class="page-link" href="?page=@(Model.Page - 1)">>></a>
+                                        </li>
+
+                                        <!-- Các số trang -->
+                                        @for (int i = 1; i <= Model.TotalPages; i++)
+                                        {
+                                            <li class="page-item @(i == Model.Page ? "active" : "")">
+                                                <a class="page-link" href="?page=@i">@i</a>
+                                            </li>
+                                        }
+
+                                        <!-- Nút "Sau" -->
+                                        <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                                            <a class="page-link" href="?page=@(Model.Page + 1)"><<</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+
+                                @* <small class="text-muted">
+                                    Trang @Model.Page / @Model.TotalPages — Tổng cộng @Model.TotalItems công văn
+                                </small> *@
                             </td>
                         </tr>
-                        STT++;
-                    }
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colspan="10" class="text-center">
-                        <div id="pagination" class="pagination"></div>
-                      </td>
-                    </tr>
-                  </tfoot>
+                    </tfoot>
                 </table>
-              </div>
             </div>
-          </div>
         </div>
-        
-      </div>
-      @Html.Partial("Create", new WebApp.ModelUI.CongVanDenCreateModel())
-      @Html.Partial("Edit", new WebApp.ModelUI.CongVanDenCreateModel())
-      <script src="~/js/CongVanDen.js"></script>
-      <link rel="stylesheet" href="../assets/css/styles.min.css" />
-  <script>
-      $('.btn-Details').on('click', function () {
-      const id = $(this).data('id');
-      window.location.href = `/CongVanDen/Details/${id}`;
-  });
-  </script>
+    </div>
+</div>
 
-      
-
+@Html.Partial(partialViewName: "Create", model: new WebApp.ModelUI.CongVanCreateModel());
+@Html.Partial(partialViewName: "Edit", model: new WebApp.ModelUI.CongVanUpdateModel());
+<script src="~/js/CongVanDen.js"></script>
+<link rel="stylesheet" href="../assets/css/styles.min.css" />

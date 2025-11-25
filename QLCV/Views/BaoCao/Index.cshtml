@@ -1,0 +1,195 @@
+@model IEnumerable<WebApp.Models.congVan>
+@using WebApp.Libs;
+
+@{
+    ViewData["Title"] = "Báo cáo công văn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+   
+</style>
+
+<!-- CSS (Bootstrap/Tailwind nếu cần) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="container-fluid py-5">
+                <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">📊 Báo cáo thống kê công văn</h1>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-6">
+                        <div class="shadow-lg bg-white p-4 rounded-xl">
+                            <h5 class="mb-3 font-semibold text-gray-700">Tỉ lệ Công văn đến / đi</h5>
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="shadow-lg bg-white p-4 rounded-xl">
+                            <h5 class="mb-3 font-semibold text-gray-700">Biểu đồ cột theo tháng</h5>
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="shadow-lg bg-white p-4 rounded-xl">
+                            <h5 class="mb-3 font-semibold text-gray-700">Biểu đồ đường</h5>
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="shadow-lg bg-white p-4 rounded-xl">
+                            <h5 class="mb-3 font-semibold text-gray-700">Biểu đồ stacked theo tháng</h5>
+                            <canvas id="stackedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid py-5">
+                <h2 class="text-2xl font-bold mb-4 text-blue-600">Bảng thống kê chi tiết</h2>
+                <div class="d-flex justify-content-end mb-3 gap-2">
+                    <a href="/BaoCao/ExportPdf" class="btn btn-danger">
+                        📄 Xuất PDF
+                    </a>
+                    <a href="/BaoCao/ExportExcel" class="btn btn-success">
+                        📊 Xuất Excel
+                    </a>
+                </div>
+                <div class="table-responsive shadow-lg bg-white p-4 rounded-xl">
+                    <div class="d-flex justify-content-end mb-2">
+                        <select id="loaiFilter" class="form-select w-auto">
+                            <option value="">Tất cả</option>
+                            <option value="CongVanDen">Công văn đến</option>
+                            <option value="CongVanDi">Công văn đi</option>
+                        </select>
+                    </div>
+                    <table  id="congVanTable" class="table table-bordered table-hover align-middle">
+                        <thead class="table-primary">
+                            <tr class="text-center">
+                                <th>STT</th>
+                                <th>Số hiệu</th>
+                                <th>Ngày</th>
+                                <th>Loại</th>
+                                <th>Nơi phát hành</th>
+                                <th>Nơi nhận</th>
+                                <th>Vị trí</th>
+                                <th>Nội dung</th>
+                                <th>Tệp đính kèm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int STT = 1;
+                            }
+                            @foreach (WebApp.Models.congVan cv in Model)
+                            {
+                                <tr>
+                                    <td>@STT</td>
+                                    <td class="text-center">@cv.SoHieu</td>
+                                    <td class="text-center">@cv.Ngay.ToString("dd/MM/yyyy")</td>
+                                    <td>@cv.LoaiCongVan</td>
+                                    <td>@cv.NoiPhatHanh?.TenNoiPhatHanh</td>
+                                    <td>@cv.NoiNhan?.TenNoiNhan</td>
+                                    <td>@cv.ViTri</td>
+                                    <td>@cv.NoiDung</td>
+                                    <td>@cv.TepDinhKem</td>
+                                </tr>
+                                STT++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 1) Nhớ: Chart.js phải được load TRƯỚC khi gọi new Chart(...) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="../assets/css/styles.min.css" />
+<script src="~/js/BaoCao.js"></script>
+
+<script>
+    // Chạy khi DOM đã sẵn sàng
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ==== LẤY DỮ LIỆU TỪ ViewBag (controller phải set trước) ====
+        const soDen = @ViewBag.SoDen ?? 0;
+        const soDi  = @ViewBag.SoDi ?? 0;
+
+        const labelsThang = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            ((IEnumerable<dynamic>)ViewBag.ThangDen ?? new List<dynamic>()).Select(x => "Tháng " + x.Thang)
+        ));
+
+        const dataDen = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            ((IEnumerable<dynamic>)ViewBag.ThangDen ?? new List<dynamic>()).Select(x => x.SoLuong)
+        ));
+
+        const dataDi = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            ((IEnumerable<dynamic>)ViewBag.ThangDi ?? new List<dynamic>()).Select(x => x.SoLuong)
+        ));
+
+        // Kiểm tra nhanh (mở Console để xem)
+        console.log('soDen, soDi', soDen, soDi);
+        console.log('labelsThang', labelsThang);
+        console.log('dataDen', dataDen);
+        console.log('dataDi', dataDi);
+
+        // ==== BIỂU ĐỒ PIE ====
+        new Chart(document.getElementById("pieChart"), {
+            type: "pie",
+            data: {
+                labels: ["Công văn đến", "Công văn đi"],
+                datasets: [{
+                    data: [soDen, soDi],
+                    backgroundColor: ["#4F46E5", "#EF4444"]
+                }]
+            }
+        });
+
+        // ==== BIỂU ĐỒ CỘT ====
+        new Chart(document.getElementById("barChart"), {
+            type: "bar",
+            data: {
+                labels: labelsThang,
+                datasets: [
+                    { label: "Công văn đến", data: dataDen, backgroundColor: "#3B82F6" },
+                    { label: "Công văn đi", data: dataDi, backgroundColor: "#F97316" }
+                ]
+            },
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+
+        // ==== BIỂU ĐỒ ĐƯỜNG ====
+        new Chart(document.getElementById("lineChart"), {
+            type: "line",
+            data: {
+                labels: labelsThang,
+                datasets: [
+                    { label: "Công văn đến", data: dataDen, borderColor: "#2563EB", borderWidth: 3, fill: false, tension: 0.3 },
+                    { label: "Công văn đi", data: dataDi, borderColor: "#DC2626", borderWidth: 3, fill: false, tension: 0.3 }
+                ]
+            }
+        });
+
+        // ==== BIỂU ĐỒ STACKED ====
+        new Chart(document.getElementById("stackedChart"), {
+            type: "bar",
+            data: {
+                labels: labelsThang,
+                datasets: [
+                    { label: "Công văn đến", data: dataDen, backgroundColor: "#1D4ED8" },
+                    { label: "Công văn đi", data: dataDi, backgroundColor: "#EA580C" }
+                ]
+            },
+            options: {
+                scales: { x: { stacked: true }, y: { stacked: true } }
+            }
+        });
+
+    }); // end DOMContentLoaded
+</script>

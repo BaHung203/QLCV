@@ -8,13 +8,15 @@ namespace WebApp.Models
 
     {
         [Key]
-        public int Id {get; set;}
+        public int Id { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập")]
         public string? Username { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
         [DataType(DataType.Password)]
-    
+
         public string? Password { get; set; } = null!;
+         public string? Email { get; set; } 
+        public string? Role { get; set; }
     }
 }

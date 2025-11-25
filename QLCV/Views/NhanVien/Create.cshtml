@@ -1,0 +1,149 @@
+@model WebApp.Models.nhanVien
+
+@{
+    ViewData["Title"] = "Thêm nhân viên";
+}
+
+
+<div class="modal fade" id="modalNhanVien" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form method="post" asp-action="Create"  enctype="multipart/form-data">
+        <div class="modal-header text-center">
+          <h5 class="modal-title w-100 text-center fw-bold" id="modalLabel"><b>Thêm Nhân Viên</b></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <hr>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="HoTen" class="form-label">Họ tên</label>
+              <input type="text" class="form-control" id="HoTenNV" name="HoTen" value="@Model?.HoTen">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="NgaySinh" class="form-label">Ngày sinh</label>
+              <input type="date" class="form-control" id="NgaySinhNV" name="NgaySinh" value="@(Model?.NgaySinh.ToString(format: "dd-MM-yyyy"))">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="GioiTinh" class="form-label">Giới tính</label>
+              <input type="text" class="form-control" id="GioiTinhNV" name="GioiTinh" value="@Model?.GioiTinh">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="SoDienThoai" class="form-label">Số điện thoại</label>
+              <input class="form-control" id="SoDienThoaiNV" maxlength="10" pattern="\d{10}" name="SoDienThoai">@Model?.SoDienThoai</input>
+            </div>
+            
+            <div class="mb-3 col-md-6">
+              <label for="Email" class="form-label">Email</label>
+               <input class="form-control" id="EmailNV" name="Email">@Model?.Email</input>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="ChucVu" class="form-label">Chức vụ</label>
+              <input class="form-control" id="ChucVuNV" name="ChucVu">@Model?.ChucVu</input>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="ChucVu" class="form-label">Phòng ban</label>
+              <select class="form-control" id="createIdPhongBan" name="IdPhongBan">
+                <option value="">-- Chọn phòng ban --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Lưu</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#modalNhanVien form').on('submit', function (e) {
+            // Reset các thông báo lỗi trước đó
+            $('.form-control').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+
+            let isValid = true;
+
+            // Danh sách các trường bắt buộc
+            const requiredFields = [
+                'HoTen',
+                'NgaySinh',
+                'GioiTinh',
+                'SoDienThoai',
+                'Email',
+                'ChucVu', 
+                'IdPhongBan'
+            ];
+
+            // Kiểm tra từng trường bắt buộc
+            requiredFields.forEach(function(fieldName) {
+                const field = $('[name="' + fieldName + '"]');
+                const value = field.val().trim();
+
+                // Kiểm tra riêng cho select box
+                if (field.is('select')) {
+                    if (value === '/') { // Giá trị mặc định của select
+                        markFieldAsInvalid(field);
+                        isValid = false;
+                    }
+                }
+                // Kiểm tra cho input/textarea
+                else if (value === '') {
+                    markFieldAsInvalid(field);
+                    isValid = false;
+                }
+            });
+
+            // Nếu có lỗi thì ngăn form submit
+            if (!isValid) {
+                e.preventDefault();
+
+                // Cuộn đến trường đầu tiên bị lỗi
+                $('html, body').animate({
+                    scrollTop: $('.is-invalid').first().offset().top - 100
+                }, 300);
+            }
+        });
+        $('#SoDienThoaiNV').on('input', function () {
+        // Loại bỏ ký tự không phải số
+          this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        // Hàm đánh dấu trường bị lỗi
+        function markFieldAsInvalid(field) {
+            field.addClass('is-invalid');
+            // Thêm thông báo lỗi
+            if (field.is('select')) {
+                field.parent().append('<div class="invalid-feedback text-danger">Vui lòng chọn giá trị hợp lệ</div>');
+            } else {
+                field.after('<div class="invalid-feedback text-danger">Vui lòng nhập thông tin này</div>');
+            }
+        }
+
+        // Xóa thông báo lỗi khi người dùng bắt đầu nhập
+        $('.form-control').on('input change', function() {
+            $(this).removeClass('is-invalid');
+            $(this).next('.invalid-feedback').remove();
+        });
+    });
+  
+  $(document).ready(function () {
+    $.ajax({
+        url: '/NhanVien/GetPhongBan', // đổi đúng tên controller/action bạn tạo
+        type: 'GET',
+        success: function (data) {
+            const select = $('#createIdPhongBan');
+            select.empty(); // xóa option cũ
+            select.append('<option value="">-- Chọn phòng ban --</option>');
+
+            $.each(data, function (i, item) {
+                select.append(`<option value="${item.idPhongBan}">${item.tenPhongBan}</option>`);
+            });
+        },
+        error: function () {
+            console.log("Lỗi khi tải danh sách phòng ban");
+        }
+    });
+});
+</script>

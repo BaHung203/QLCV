@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.SignalR;
+
+@{
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
@@ -8,13 +10,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Modernize Free</title>
+  <title>@ViewData["Title"] - QLCV</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
   <style>
         
         body {
@@ -65,7 +68,7 @@
             background: #555;
         }
     </style>
-</head>
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
         <div class="p-4 flex items-center justify-between">
@@ -74,7 +77,7 @@
             </div>
             <div class="flex-1 ml-4 text-right">
                 <p class="text-sm font-medium text-gray-500">Công văn đến</p>
-                <p class="text-2xl font-semibold text-gray-800">0</p>
+                <p id="incomingCount" class="text-2xl font-semibold text-gray-800">@ViewBag.IncomingCount</p>
             </div>
         </div>
         <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
@@ -92,7 +95,7 @@
             </div>
             <div class="flex-1 ml-4 text-right">
                 <p class="text-sm font-medium text-gray-500">Công văn đi</p>
-                <p class="text-2xl font-semibold text-gray-800">0</p>
+                <p id="outgoingCount" class="text-2xl font-semibold text-gray-800">@ViewBag.OutgoingCount</p>
             </div>
         </div>
         <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
@@ -109,12 +112,12 @@
                 <i class="fas fa-clock text-yellow-500 text-xl"></i>
             </div>
             <div class="flex-1 ml-4 text-right">
-                <p class="text-sm font-medium text-gray-500">Chưa xử lý</p>
-                <p class="text-2xl font-semibold text-gray-800">0</p>
+                <p class="text-sm font-medium text-gray-500">Nhân viên</p>
+                <p id="employeeCount" class="text-2xl font-semibold text-gray-800">@ViewBag.employeeCount</p>
             </div>
         </div>
         <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
-            <a href="/CongVanDen/Index" class="flex items-center justify-center text-sm text-yellow-500 hover:text-yellow-600 font-medium">
+            <a href="/nhanVien/Index" class="flex items-center justify-center text-sm text-yellow-500 hover:text-yellow-600 font-medium">
                 <span>Xem chi tiết</span>
                 <i class="fas fa-arrow-right ml-1 text-xs"></i>
             </a>
@@ -132,7 +135,7 @@
             </div>
         </div>
         <div class="bg-gray-50 px-4 py-2 border-t border-gray-100">
-            <a href="pages/reports.html" class="flex items-center justify-center text-sm text-indigo-500 hover:text-indigo-600 font-medium">
+            <a href="/BaoCao/Index" class="flex items-center justify-center text-sm text-indigo-500 hover:text-indigo-600 font-medium">
                 <span>Truy cập ngay</span>
                 <i class="fas fa-file-pdf ml-1 text-xs"></i>
             </a>
@@ -166,7 +169,7 @@
             </h2>
         </div>
         <div class="p-4">
-            <a href="pages/user-management.html" class="mb-3 flex items-center p-3 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
+            <a href="/Login/Index" class="mb-3 flex items-center p-3 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
                 <i class="fas fa-users mr-3"></i>
                 <span>Quản lý người dùng</span>
             </a>
@@ -178,7 +181,7 @@
                 <i class="fas fa-search mr-3"></i>
                 <span>Tìm kiếm nâng cao</span>
             </a>
-            <a href="#" class="flex items-center p-3 bg-emerald-50 text-emerald-700 rounded-md hover:bg-emerald-100 transition-colors">
+            <a href="/BaoCao/Index" class="flex items-center p-3 bg-emerald-50 text-emerald-700 rounded-md hover:bg-emerald-100 transition-colors">
                 <i class="fas fa-file-export mr-3"></i>
                 <span>Xuất báo cáo</span>
             </a>
@@ -195,7 +198,7 @@
                 <i class="fas fa-inbox text-blue-500 mr-2"></i>
                 Công văn đến gần đây
             </h2>
-            <a href="/CongVanDen/Create" class="text-sm text-blue-500 hover:text-blue-700">Xem tất cả</a>
+            <a href="/CongVanDen/Index" class="text-sm text-blue-500 hover:text-blue-700">Xem tất cả</a>
         </div>
         <!-- Table content remains the same -->
     </div>
@@ -207,7 +210,7 @@
                 <i class="fas fa-paper-plane text-green-500 mr-2"></i>
                 Công văn đi gần đây
             </h2>
-            <a href="pages/outgoing-docs.html" class="text-sm text-green-500 hover:text-green-700">Xem tất cả</a>
+            <a href="/CongVanDi/Index" class="text-sm text-green-500 hover:text-green-700">Xem tất cả</a>
         </div>
         <!-- Table content remains the same -->
     </div>
@@ -227,7 +230,7 @@
     <div class="col-span-1 bg-white rounded-lg shadow-sm overflow-hidden">
         <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100">
             <h2 class="font-semibold text-lg text-gray-800">Thống kê</h2>
-            <a href="pages/reports.html" class="text-sm text-indigo-500 hover:text-indigo-700">Xem chi tiết</a>
+            <a href="/BaoCao/Index" class="text-sm text-indigo-500 hover:text-indigo-700">Xem chi tiết</a>
         </div>
         <!-- Statistics content remains the same -->
     </div>
@@ -273,6 +276,21 @@
                     }
                 });
             }
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub")
+                .build();
+
+            connection.on("UpdateDocumentCount", (incoming, outgoing, employee) => {
+                $("#employeeCount").text(employee);
+                $("#incomingCount").text(incoming);
+                $("#outgoingCount").text(outgoing);
+            });
+
+            connection.start().then(() => {
+                console.log("SignalR connected!");
+                // Gửi yêu cầu lấy số liệu ban đầu
+                connection.invoke("GetDocumentCount").catch(err => console.error(err));
+            }).catch(err => console.error(err));
         });
 </script> 
 

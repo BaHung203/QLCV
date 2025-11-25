@@ -6,7 +6,7 @@ namespace WebApp.Models
     public class NoiPhatHanh
     {
         [Key]
-        public int IdNoiPhatHanh { get; set; }
+        public int ID { get; set; }
 
         public string? TenNoiPhatHanh { get; set; }
 

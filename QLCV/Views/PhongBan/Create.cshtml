@@ -1,0 +1,83 @@
+@model WebApp.Models.phongBan
+
+<div class="modal fade" id="modalCreatephongBan" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form method="post" asp-action="Create" enctype="multipart/form-data">
+        <div class="modal-header text-center">
+          <h5 class="modal-title w-100 text-center fw-bold" id="modalLabel">Thêm Phòng Ban</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#modalPhongBan" aria-label="Đóng"></button>
+        </div>
+        <hr>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="TenPhongBan" class="form-label">Tên phòng ban</label>
+              <input type="text" class="form-control" id="TenPhongBan" name="TenPhongBan" value="@Model?.TenPhongBan" />
+            </div>
+
+            <div class="mb-3 col-md-6">
+              <label for="IdTruongPhong" class="form-label">Trưởng phòng</label>
+              <input type="text" class="form-control" id="IdTruongPhong" name="IdTruongPhong" value="@Model?.IdTruongPhong" />
+            </div>
+
+            <div class="mb-3 col-md-6">
+              <label for="SoDienThoai" class="form-label">Số điện thoại</label>
+              <input type="text" class="form-control" id="SoDienThoai" maxlength="10" pattern="\d{10}" name="SoDienThoai" value="@Model?.SoDienThoai" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Lưu</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+        $('#modalCreatephongBan form').on('submit', function (e) {
+          // Reset lỗi trước khi kiểm tra
+          $('.form-control').removeClass('is-invalid');
+          $('.invalid-feedback').remove();
+
+          let isValid = true;
+
+          // Danh sách các trường bắt buộc
+          const requiredFields = [
+              'TenPhongBan', 
+              'IdTruongPhong', 
+              'SoDienThoai'
+          ];
+
+          requiredFields.forEach(function (fieldId) {
+              const field = $('#' + fieldId);
+              const value = field.val().trim();
+
+              if (value === '') {
+                  if (!field.hasClass('is-invalid')) {
+                      field.addClass('is-invalid');
+                      field.after('<div class="invalid-feedback">Vui lòng nhập thông tin này</div>');
+                  }
+                  isValid = false;
+              }
+          });
+
+          if (!isValid) {
+              e.preventDefault();
+              $('.is-invalid').first().focus();
+          }
+      });
+      $('#SoDienThoai').on('input', function () {
+        // Loại bỏ ký tự không phải số
+          this.value = this.value.replace(/[^0-9]/g, '');
+        });
+      // Xóa thông báo lỗi khi nhập lại
+      $('.form-control').on('input change', function () {
+          $(this).removeClass('is-invalid');
+          $(this).next('.invalid-feedback').remove();
+      });
+  });
+</script>

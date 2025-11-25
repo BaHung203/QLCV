@@ -1,13 +1,15 @@
-@model WebApp.ModelUI.CongVanDiCreateModel
+@using WebApp.Libs
+@model WebApp.ModelUI.CongVanCreateModel
 
 <div class="modal fade" id="modalCongVan" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <form method="post" asp-action="Create"  enctype="multipart/form-data">
         <div class="modal-header text-center">
-          <h5 class="modal-title w-100 text-center" id="modalLabel">Thêm Công Văn Đi</h5>
+          <h5 class="modal-title w-100 text-center" id="modalLabel"><b>Thêm Công Văn Đi</b></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
         </div>
+        <hr>
         <div class="modal-body">
           <div class="row">
             <div class="mb-3 col-md-6">
@@ -15,31 +17,21 @@
               <input type="text" class="form-control" id="SoHieu" name="SoHieu" value="@Model?.SoHieu">
             </div>
             <div class="mb-3 col-md-6">
-              <label for="NgayDi" class="form-label">Ngày đi</label>
-              <input type="date" placeholder="dd-MM-yyyy" class="form-control" id="NgayDi" name="NgayDi" value="@Model?.NgayDi.ToString("dd-MM-yyyy")">
+              <label for="Ngay" class="form-label">Ngày đi</label>
+              <input type="date" class="form-control" id="NgayDi" name="Ngay" value="@Model?.Ngay.ToString("dd/MM/yyyy")">
             </div>
 
-            <div class="mb-3 col-md-6">
-              <label for="IdNoiNhan" class="form-lable">Nơi nhận</label>
-              <select type="text" class="form-control" id="IdNoiNhan" name="IdNoiNhan" placeholder="--Chọn nơi nhận--" value="@Model?.IdNoiNhan">
-                <option value="1">--Chọn nơi nhận--</option>
-                <option value="1">Sở Tài Nguyên Môi Trường</option>
-                <option value="2">UBND Quận 1</option>
-                <option value="3">Phòng Hành Chính</option>
+              <div class="mb-3 col-md-6">
+                <label for="IdNoiNhan" class="form-lable">Nơi nhận</label>
+                <select class="form-control" id="createIdNoiNhan" name="IdNoiNhan">
+                <option value="">-- Chọn nơi nhận--</option>
               </select>
             </div>
+            
+
             <div class="mb-3 col-md-6">
-              <label for="IdLoaiCongVan" class="form-lable">Loại công văn</label>
-              <select type="text" class="form-control" id="IdLoaiCongVan" name="IdLoaiCongVan" placeholder="--Chọn công văn--" value="@Model?.IdLoaiCongVan">
-                <option value="1">--Chọn công văn--</option>
-                <option value="1">Công văn đi</option>
-                <option value="2">Công văn đến</option>
-                <option value="3">Công văn họp</option>
-              </select>
-            </div>
-            <div class="mb-3 col-md-6">
-              <label for="Vitri" class="form-label">Vị trí</label>
-              <input type="text" class="form-control" id="Vitri" name="Vitri" value="@Model?.Vitri">
+              <label for="ViTri" class="form-label">Vị trí</label>
+              <input type="text" class="form-control" id="Vitri" name="ViTri" value="@Model?.ViTri">
             </div>
             <div class="mb-3 col-md-6">
               <label for="file" class="form-label">Tệp đính kèm</label>
@@ -64,3 +56,89 @@
     </div>
   </div>
 </div>
+<script>
+$(document).ready(function() {
+    $('#modalCongVan form').on('submit', function(e) {
+        // Reset các thông báo lỗi trước đó
+        $('.form-control').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+        
+        let isValid = true;
+        
+        // Danh sách các trường bắt buộc
+        const requiredFields = [
+            'SoHieu', 
+            'NgayDi',
+            'ViTri',
+            'file',
+            'IdNoiNhan', 
+            'NoiDung',
+            'NoiDungTep'
+        ];
+        
+        // Kiểm tra từng trường bắt buộc
+        requiredFields.forEach(function(fieldName) {
+            const field = $('[name="' + fieldName + '"]');
+            const value = field.val().trim();
+            
+            // Kiểm tra riêng cho select box
+            if (field.is('select')) {
+                if (value === '') { // Giá trị mặc định của select
+                    markFieldAsInvalid(field);
+                    isValid = false;
+                }
+            } 
+            // Kiểm tra cho input/textarea
+            else if (value === '') {
+                markFieldAsInvalid(field);
+                isValid = false;
+            }
+        });
+        
+        // Nếu có lỗi thì ngăn form submit
+        if (!isValid) {
+            e.preventDefault();
+            
+            // Cuộn đến trường đầu tiên bị lỗi
+            $('html, body').animate({
+                scrollTop: $('.is-invalid').first().offset().top - 100
+            }, 300);
+        }
+    });
+    
+    // Hàm đánh dấu trường bị lỗi
+    function markFieldAsInvalid(field) {
+        field.addClass('is-invalid');
+        // Thêm thông báo lỗi
+        if (field.is('select')) {
+            field.parent().append('<div class="invalid-feedback text-danger">Vui lòng chọn giá trị hợp lệ</div>');
+        } else {
+            field.after('<div class="invalid-feedback text-danger">Vui lòng nhập thông tin này</div>');
+        }
+    }
+    
+    // Xóa thông báo lỗi khi người dùng bắt đầu nhập
+    $('.form-control').on('input change', function() {
+        $(this).removeClass('is-invalid');
+        $(this).next('.invalid-feedback').remove();
+    });
+});
+$(document).ready(function () {
+    $.ajax({
+        url: '/congVanDi/GetNoiNhan', // đổi đúng tên controller/action bạn tạo
+        type: 'GET',
+        success: function (data) {
+            const select = $('#createIdNoiNhan');
+            select.empty(); // xóa option cũ
+            select.append('<option value="">-- Chọn nơi nhận --</option>');
+
+            $.each(data, function (i, item) {
+                select.append(`<option value="${item.id}">${item.tenNoiNhan}</option>`);
+            });
+        },
+        error: function () {
+            console.log("Lỗi khi tải danh sách nơi phát hành");
+        }
+    });
+});
+</script>

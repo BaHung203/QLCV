@@ -1,13 +1,13 @@
-@model WebApp.Models.CongVanDen
+@model WebApp.Models.congVan
 @{
     ViewData["Title"] = "Chi tiết công văn đi";
-    Layout = "~/Views/Shared/_Layout.cshtml"; 
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid">
-    <div class="container-fluid mt-4">
+    <div class="container-fluid ">
         <div class="text-center">
-        <h2 class="mb-4">Chi tiết công văn đi</h2>
+            <h2 class="mb-4">Chi tiết công văn đến</h2>
         </div>
         <table id="myTable" class="table table-bordered">
             <tr>
@@ -16,19 +16,15 @@
             </tr>
             <tr>
                 <th>Ngày đi</th>
-                <td>@Model.NgayDen.ToString("dd-MM-yyyy")</td>
+                <td>@Model.Ngay.ToString("dd-MM-yyyy")</td>
             </tr>
             <tr>
-                <th>ID Nơi nhận</th>
+                <th>Nơi phát hành</th>
                 <td>@Model.IdNoiPhatHanh</td>
             </tr>
             <tr>
-                <th>ID Loại công văn</th>
-                <td>@Model.IdLoaiCongVan</td>
-            </tr>
-            <tr>
                 <th>Vị trí</th>
-                <td>@Model.Vitri</td>
+                <td>@Model.ViTri</td>
             </tr>
             <tr>
                 <th>Nội dung</th>
@@ -41,7 +37,8 @@
                     {
                         var fileName = Model.TepDinhKem.Substring(Model.TepDinhKem.LastIndexOf('\\') + 1);
                         var fileExtension = fileName.Substring(fileName.LastIndexOf('.') + 1).ToLower();
-                        var fileType = fileExtension switch {
+                        var fileType = fileExtension switch
+                        {
                             "pdf" => "pdf",
                             "doc" => "doc",
                             "docx" => "docx",
@@ -104,6 +101,11 @@
                         <i class="fas fa-exclamation-triangle"></i> Không hỗ trợ xem trước định dạng này. Vui lòng tải xuống để xem.
                     </div>
                 </div>
+                <div id="errorViewer" style="display: none;">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> Lỗi khi xem trước: <span id="errorMessage"></span>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -111,9 +113,12 @@
         </div>
     </div>
 </div>
-    <link rel="stylesheet" href="~/assets/css/styles.min.css" />
+
+<link rel="stylesheet" href="~/assets/css/styles.min.css" />
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
             $('.btn-preview').on('click', function () {
@@ -123,77 +128,54 @@
             });
         });
 
-        function previewFile(filePath, fileType = pdf) {
+        function previewFile(filePath, fileType) {
             // Ẩn tất cả các viewer trước
-            $('#pdfViewer, #docViewer, #imageViewer, #unsupportedViewer').hide();
-            
+            $('#pdfViewer, #docViewer, #imageViewer, #unsupportedViewer, #errorViewer').hide();
+
             const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-            // Thay toàn bộ \ thành / để xử lý dễ hơn
-            
-            
+
+            // Chuẩn hóa đường dẫn: thay toàn bộ \ thành /
+            const normalizedPath = filePath.replaceAll("\\", "/");
+            const fileIndex = normalizedPath.indexOf("/File/");
+            const fileName = fileIndex !== -1 ? normalizedPath.substring(fileIndex) : "/" + normalizedPath.split("/").pop(); // Đảm bảo bắt đầu bằng /
+            const fullUrl = window.location.origin + fileName;
+
+            console.log('Attempting to preview file. Full URL:', fullUrl); // Gỡ lỗi
+
             if (fileType === 'pdf') {
-                
-                const normalizedPath = filePath.replaceAll("\\", "/"); // Chuyển dấu \ thành /
-
-                // Cắt phần đường dẫn từ "File" trở đi
-                const fileIndex = normalizedPath.indexOf("/File/");
-                if (fileIndex !== -1) {
-                    fileName = normalizedPath.substring(fileIndex); // Lấy từ /File/ đến hết
-                } else {
-                    fileName = normalizedPath.split("/").pop(); // Nếu không tìm thấy /File/, lấy tên file
-                }
-
-                let src = window.location.origin + fileName;
-                $('#pdfIframe').attr('src', src);
+                $('#pdfIframe').attr('src', fullUrl);
                 $('#pdfViewer').show();
                 $('#previewModalLabel').text('Xem trước PDF');
                 modal.show();
-            } 
-            else if (fileType === 'doc' || fileType === 'docx') {
-               const normalizedPath = filePath.replaceAll("\\", "/"); // Chuyển dấu \ thành /
-
-                // Cắt phần đường dẫn từ "File" trở đi
-                let fileName;
-                const fileIndex = normalizedPath.indexOf("/File/");
-                if (fileIndex !== -1) {
-                    fileName = normalizedPath.substring(fileIndex); // Lấy từ /File/ đến hết
-                } else {
-                    fileName = normalizedPath.split("/").pop(); // Nếu không tìm thấy /File/, lấy tên file
-                }
-
-                // Kiểm tra định dạng file
-                const isDocFile = fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx');
-                if (!isDocFile) {
-                    alert('File không phải định dạng .doc hoặc .docx!');
-                    return;
-                }
-
-                // Tạo URL cho Google Docs Viewer
-                const fileUrl = window.location.origin + fileName;
-                const googleDocsUrl = 'https://docs.google.com/gview?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
-
-                // Cập nhật iframe và giao diện
-                $('#docIframe').attr('src', googleDocsUrl).on('error', () => {
-                    alert('Không thể tải file. Vui lòng kiểm tra đường dẫn hoặc kết nối.');
+            } else if (fileType === 'doc' || fileType === 'docx') {
+                const googleDocsUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fullUrl)}&embedded=true`;
+                $('#docIframe').attr('src', googleDocsUrl)
+                .on('load', () => {
+                    console.log('DOCX loaded successfully');
+                    $('#docViewer').show();
+                    $('#previewModalLabel').text('Xem trước Word');
+                    modal.show();
+                })
+                .on('error', (e) => {
+                    console.error('Error loading DOCX:', e);
+                    $('#errorMessage').text('Không thể tải file từ Google Docs Viewer. Kiểm tra đường dẫn: ' + fullUrl);
+                    $('#errorViewer').show();
+                    $('#previewModalLabel').text('Lỗi khi xem trước');
+                    modal.show();
                 });
-                $('#docViewer').show();
-                $('#previewModalLabel').text('Xem trước Word');
-                modal.show();
-            } 
-            else if (fileType === 'image') {
-                const fileIndex = normalizedPath.indexOf("/File/");
-                if (fileIndex !== -1) {
-                    fileName = normalizedPath.substring(fileIndex); // Lấy từ /File/ đến hết
-                } else {
-                    fileName = normalizedPath.split("/").pop(); // Nếu không tìm thấy /File/, lấy tên file
-                }
-                let src = window.location.origin + fileName;
-                $('#imagePreview').attr('src', src);
-                $('#imageViewer').show();
-                $('#previewModalLabel').text('Xem trước hình ảnh');
-                modal.show();
-            } 
-            else {
+            } else if (fileType === 'image') {
+                $('#imagePreview').attr('src', fullUrl).on('load', () => {
+                    $('#imageViewer').show();
+                    $('#previewModalLabel').text('Xem trước hình ảnh');
+                    modal.show();
+                }).on('error', (e) => {
+                    console.error('Error loading image:', e);
+                    $('#errorMessage').text('Không thể tải hình ảnh. Kiểm tra đường dẫn: ' + fullUrl);
+                    $('#errorViewer').show();
+                    $('#previewModalLabel').text('Lỗi khi xem trước');
+                    modal.show();
+                });
+            } else {
                 $('#unsupportedViewer').show();
                 $('#previewModalLabel').text('Không hỗ trợ xem trước');
                 modal.show();

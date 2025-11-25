@@ -1,0 +1,42 @@
+@model WebApp.Models.phongBan
+@{
+    ViewData["Title"] = "Sửa phòng ban";
+}
+
+<div class="modal fade" id="modalEditPhongBan" tabindex="-1" aria-labelledby="modalEditPhongBanLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form method="post" asp-action="Edit" asp-controller="PhongBan">
+        <input type="hidden" name="IdPhongBan" />
+        <div class="modal-header text-center">
+          <h5 class="modal-title w-100 text-center fw-bold" id="modalLabel"><b>Sửa Phòng Ban</b></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <hr>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-3 col-md-6">
+                <label for="editTenPhongBan" class="form-label">Tên phòng ban</label>
+                <input type="text" class="form-control" name="TenPhongBan">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="IdNhanVien" class="form-label">Phòng ban</label>
+              <select class="form-control" id="IdEditNhanVien" name="IdNhanVien">
+                <option value="">-- Chọn nhân viên --</option>
+              </select>
+            </div>
+            <div class="mb-3 col-md-6">
+                <label for="editSoDienThoai" class="form-label">Số điện thoại</label>
+                <input type="text" class="form-control" name="SoDienThoai" id="SoDienThoai" maxlength="10" pattern="\d{10}">
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Lưu</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </form>
+
+    </div>
+  </div>
+</div>

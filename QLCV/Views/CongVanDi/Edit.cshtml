@@ -1,4 +1,4 @@
-@model WebApp.ModelUI.CongVanDiCreateModel
+@model WebApp.ModelUI.CongVanUpdateModel
 @{
    ViewData["Title"] = "Edit";
 }
@@ -9,9 +9,10 @@
       <form method="post" asp-action="Edit" enctype="multipart/form-data">
         <input type="hidden" id="editId" name="Id" value="@Model?.ID" />
         <div class="modal-header">
-          <h5 class="modal-title w-100 text-center" id="modalEditLabel">Cập Nhật Công Văn Đi</h5>
+          <h5 class="modal-title w-100 text-center" id="modalEditLabel"><b>Cập Nhật Công Văn Đi</b></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
         </div>
+        <hr>
         <div class="modal-body">
           <div class="row">
             <div class="mb-3 col-md-6">
@@ -19,34 +20,23 @@
               <input type="text" class="form-control" id="SoHieu" name="SoHieu" value="">
             </div>
             <div class="mb-3 col-md-6">
-              <label for="NgayDi" class="form-label">Ngày đi</label>
-              <input type="date" class="form-control" id="NgayDi" name="NgayDi">
+              <label for="Ngay" class="form-label">Ngày đi</label>
+              <input type="date" class="form-control" id="Ngay" name="Ngay">
             </div>
             <div class="mb-3 col-md-6">
-              <label for="IdNoiNhan" class="form-lable">Nơi nhận</label>
-              <select type="text" asp-for="IdNoiNhan"  class="form-control" id="IdNoiNhan" name="IdNoiNhan" placeholder="--Chọn nơi nhận--" >
-                <option value="" selected disabled hidden>--Chọn nơi nhận--</option>
-                <option value="1">Sở Tài Nguyên Môi Trường</option>
-                <option value="2">UBND Quận 1</option>
-                <option value="3">Phòng Hành Chính</option>
-              </select>
+                <label for="IdNoiNhan" class="form-lable">Nơi nhận</label>
+                <select class="form-control" id="editIdNoiNhan" name="IdNoiNhan">
+                  <option value="">-- Chọn nơi nhận--</option>
+                </select>
             </div>
-            <div class="mb-3 col-md-6">
-              <label for="IdLoaiCongVan" class="form-lable">Loại công văn</label>
-              <select type="text" class="form-control" id="IdLoaiCongVan" name="IdLoaiCongVan" placeholder="--Chọn công văn--">
-                <option value="" selected disabled hidden>--Chọn công văn--</option>
-                <option value="1">Công văn đi</option>
-                <option value="2">Công văn đến</option>
-                <option value="3">Công văn họp</option>
-              </select>
-            </div>
+            
             <div class="mb-3 col-md-6">
               <label for="editViTri" class="form-label">Vị trí</label>
-              <input type="text" class="form-control" id="editViTri" name="Vitri">
+              <input type="text" class="form-control" id="editViTri" name="ViTri">
             </div>
              <div class="mb-3 col-md-6">
               <label for="TepDinhKem" class="form-label">Tệp đính kèm</label>
-              <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="form-control" id="TepDinhKem" name="TepDinhKem">
+              <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="form-control" id="TepDinhKem" name="file">
               <small id="fileNameDisplay" class="form-text text-muted"></small>
             </div>
             <div class="mb-3 col-md-6">
@@ -55,13 +45,13 @@
             </div>
            
             <div class="mb-3 col-md-6">
-              <label for="editNoiDungTep" class="form-label">Ghi chú tệp</label>
-              <textarea class="form-control" id="editNoiDungTep" name="GhiChuTep"></textarea>
+              <label for="NoiDungTep" class="form-label">Nội dung tệp</label>
+              <textarea class="form-control" id="NoiDungTep" name="NoiDungTep"></textarea>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Cập nhật</button>
+          <button type="submit" class="btn btn-primary">Lưu</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
         </div>
       </form>

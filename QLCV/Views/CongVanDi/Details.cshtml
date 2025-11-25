@@ -1,11 +1,11 @@
-@model WebApp.Models.CongVanDi
+@model WebApp.Models.congVan
 @{
     ViewData["Title"] = "Chi tiết công văn đi";
     Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
 
 <div class="container-fluid">
-    <div class="container-fluid mt-4">
+    <div class="container-fluid ">
         <div class="text-center">
             <h2 class="mb-4">Chi tiết công văn đi</h2>
         </div>
@@ -16,19 +16,16 @@
             </tr>
             <tr>
                 <th>Ngày đi</th>
-                <td>@Model.NgayDi.ToString("dd-MM-yyyy")</td>
+                <td>@Model.Ngay.ToString("dd-MM-yyyy")</td>
             </tr>
             <tr>
                 <th>ID Nơi nhận</th>
                 <td>@Model.IdNoiNhan</td>
             </tr>
-            <tr>
-                <th>ID Loại công văn</th>
-                <td>@Model.IdLoaiCongVan</td>
-            </tr>
+            
             <tr>
                 <th>Vị trí</th>
-                <td>@Model.Vitri</td>
+                <td>@Model.ViTri</td>
             </tr>
             <tr>
                 <th>Nội dung</th>
@@ -81,7 +78,7 @@
     </div>
 </div>
 
-<!-- Modal Xem trước -->
+<!-- Modal -->
 <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -129,41 +126,48 @@
             
             const modal = new bootstrap.Modal(document.getElementById('previewModal'));
             // Thay toàn bộ \ thành / để xử lý dễ hơn
-            
+            const normalizedPath = filePath.replaceAll("\\", "/");
+            const fileIndex = normalizedPath.indexOf("/File/");
+            const fileName = fileIndex !== -1 ? normalizedPath.substring(fileIndex) : "/" + normalizedPath.split("/").pop(); // Đảm bảo bắt đầu bằng /
+            const fullUrl = window.location.origin + fileName;
+
+            console.log('Attempting to preview file. Full URL:', fullUrl); // Gỡ lỗi
             
             if (fileType === 'pdf') {
-                
-                const normalizedPath = filePath.replaceAll("\\", "/"); // Chuyển dấu \ thành /
-
-                // Cắt phần đường dẫn từ "File" trở đi
-                const fileIndex = normalizedPath.indexOf("/File/");
-                if (fileIndex !== -1) {
-                    fileName = normalizedPath.substring(fileIndex); // Lấy từ /File/ đến hết
-                } else {
-                    fileName = normalizedPath.split("/").pop(); // Nếu không tìm thấy /File/, lấy tên file
-                }
-
-                let src = window.location.origin + fileName;
-                $('#pdfIframe').attr('src', src);
+                $('#pdfIframe').attr('src', fullUrl);
                 $('#pdfViewer').show();
                 $('#previewModalLabel').text('Xem trước PDF');
                 modal.show();
             } 
             else if (fileType === 'doc' || fileType === 'docx') {
-                const normalizedPath = filePath.replaceAll("\\", "/");
-            // Cắt tên file sau từ cuối
-                const googleDocsUrl = 'https://docs.google.com/gview?url=' + 
-                    encodeURIComponent(window.location.origin + filePath) + '&embedded=true';
-                $('#docIframe').attr('src', googleDocsUrl);
-                $('#docViewer').show();
-                $('#previewModalLabel').text('Xem trước Word');
-                modal.show();
+                const googleDocsUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fullUrl)}&embedded=true`;
+                $('#docIframe').attr('src', googleDocsUrl)
+                .on('load', () => {
+                    console.log('DOCX loaded successfully');
+                    $('#docViewer').show();
+                    $('#previewModalLabel').text('Xem trước Word');
+                    modal.show();
+                })
+                .on('error', (e) => {
+                    console.error('Error loading DOCX:', e);
+                    $('#errorMessage').text('Không thể tải file từ Google Docs Viewer. Kiểm tra đường dẫn: ' + fullUrl);
+                    $('#errorViewer').show();
+                    $('#previewModalLabel').text('Lỗi khi xem trước');
+                    modal.show();
+                });
             } 
             else if (fileType === 'image') {
-                $('#imagePreview').attr('src', filePath);
-                $('#imageViewer').show();
-                $('#previewModalLabel').text('Xem trước hình ảnh');
-                modal.show();
+                $('#imagePreview').attr('src', fullUrl).on('load', () => {
+                    $('#imageViewer').show();
+                    $('#previewModalLabel').text('Xem trước hình ảnh');
+                    modal.show();
+                }).on('error', (e) => {
+                    console.error('Error loading image:', e);
+                    $('#errorMessage').text('Không thể tải hình ảnh. Kiểm tra đường dẫn: ' + fullUrl);
+                    $('#errorViewer').show();
+                    $('#previewModalLabel').text('Lỗi khi xem trước');
+                    modal.show();
+                });
             } 
             else {
                 $('#unsupportedViewer').show();

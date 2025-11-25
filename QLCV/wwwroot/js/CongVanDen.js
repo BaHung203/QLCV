@@ -1,61 +1,55 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const rows = document.querySelectorAll(".congVanTable tr");
-    const itemsPerPage = 5;
-    let currentPage = 1;
-    const totalPages = Math.ceil(rows.length / itemsPerPage);
-    const paginationContainer = document.getElementById("pagination");
-
-    function showPage(page) {
-      currentPage = page;
-      const start = (page - 1) * itemsPerPage;
-      const end = start + itemsPerPage;
-
-      rows.forEach((row, index) => {
-        row.style.display = index >= start && index < end ? "" : "none";
-      });
-
-      renderPagination();
-    }
-
-    function renderPagination() {
-      paginationContainer.innerHTML = "";
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        btn.className = "btn btn-sm btn-outline-primary mx-1";
-        if (i === currentPage) btn.classList.add("active");
-
-        btn.addEventListener("click", () => showPage(i));
-        paginationContainer.appendChild(btn);
-      }
-    }
-
-    // Khởi tạo
-    showPage(1);
+    
   });
+  function loadEditNoiPhatHanh() {
+    $.ajax({
+        url: '/congVanDen/GetNoiPhatHanh', // đổi đúng tên controller/action bạn tạo
+        type: 'GET',
+        success: function (data) {
+            const select = $('#editIdNoiPhatHanh');
+            select.empty(); // xóa option cũ
+            select.append('<option value="">-- Chọn nơi phát hành --</option>');
+
+            $.each(data, function (i, item) {
+                select.append(`<option value="${item.id}">${item.tenNoiPhatHanh}</option>`);
+            });
+        },
+        error: function () {
+            console.log("Lỗi khi tải danh sách nơi phát hành");
+        }
+    });
+}
 $(document).ready(function() {
     $('.btnEdit').on('click', function () {
         const btn = $(this);
         var id = btn.data('id');
         var data = btn.data('item');
-    
+        const noiPhatHanhId = $(this).data('noiphathanh');
+
+        loadEditNoiPhatHanh();
+        // Nếu trình duyệt convert thành string → parse lại
+        if (typeof data === 'string') {
+            data = JSON.parse(data);
+        }
         // Hiển thị modal trước
-        $('#modalEditCongVan').modal("show");
+        $('#modalEditCongVan').modal('show');
     
         // Đợi modal hiển thị xong rồi set giá trị
         $('#modalEditCongVan').on('shown.bs.modal', function () {
           $('#modalEditCongVan input[name="Id"]').val(data.ID);
           $('#modalEditCongVan input[name="SoHieu"]').val(data.SoHieu);
-          $('#modalEditCongVan input[name="NgayDen"]').val(formatDate(data.NgayDen));
-          $('#modalEditCongVan select[name="IdNoiPhatHanh"]').val(data.IdNoiPhatHanh).trigger('change');
-          $('#modalEditCongVan select[name="IdLoaiCongVan"]').val(data.IdLoaiCongVan).trigger('change');
-          $('#modalEditCongVan input[name="Vitri"]').val(data.Vitri);
+          $('#modalEditCongVan input[name="Ngay"]').val(formatDate(data.Ngay));
+          $('#modalEditCongVan select[name="IdNoiPhatHanh"]').val(data.IdNoiPhatHanh);
+          $('#modalEditCongVan input[name="ViTri"]').val(data.ViTri);
           $('#modalEditCongVan textarea[name="NoiDung"]').val(data.NoiDung);
           $('#fileNameDisplay').text(data.TepDinhKem ? `Đã đính kèm: ${data.TepDinhKem}` : '');
-          $('#modalEditCongVan textarea[name="GhiChuTep"]').val(data.NoiDungTep);
+          $('#modalEditCongVan textarea[name="NoiDungTep"]').val(data.NoiDungTep);
 
           const fileNameText = data.TepDinhKem ? `Đã đính kèm: ${data.TepDinhKem}` : '';
           $('#fileNameDisplay').text(fileNameText);
+          loadEditNoiPhatHanh(data.id);
+          $('#modalEditCongVan').modal('show');
+          setTimeout(() => $('#editIdNoiPhatHanh').val(noiPhatHanhId), 200);
       });
     });
     
@@ -86,47 +80,48 @@ $(document).ready(function() {
             });
         }
     });
-    $('.btn-Details').on('click', function () {
+     $('.btn-Details').on('click', function () {
       const id = $(this).data('id');
       window.location.href = `/CongVanDen/Details/${id}`;
-  });
+    });
+    // Khi gõ phím trong ô tìm kiếm
     $('#searchInput').on('keyup', function () {
-        searchTable($(this).val());
-      });
-    
-      // Khi bấm vào icon tìm kiếm
-      $('#search-addon').on('click', function () {
-        const value = $('#searchInput').val();
-        searchTable(value);
-      });
-    // tìm kiếm
+      const value = $(this).val();
+      searchTable(value);
+    });
+
+    // Khi bấm vào icon tìm kiếm
+    $('#search-addon').on('click', function () {
+      const value = $('#searchInput').val();
+      searchTable(value);
+    });
+
+    // Hàm tìm kiếm
     function searchTable(keyword) {
-        const value = keyword.toLowerCase();
-    
-        $('.congVanTable tr').each(function () {
-          const soHieu = $(this).find('.soHieu').text().toLowerCase();
-          const ngayDen = $(this).find('.ngayDen').text().toLowerCase();
-          const idNoiPhatHanh = $(this).find('.idNoiPhatHanh').text().toLowerCase();
-          const idLoaiCongVan = $(this).find('.idLoaiCongVan').text().toLowerCase();
-          const viTri = $(this).find('.viTri').text().toLowerCase();
-          const noiDung = $(this).find('.noiDung').text().toLowerCase();
-          const tep = $(this).find('.Tep').text().toLowerCase();
-          const noiDungTep = $(this).find('.noiDungTep').text().toLowerCase();
-    
-          const match =
-            soHieu.includes(value) ||
-            ngayDen.includes(value) ||
-            idNoiPhatHanh.includes(value) ||
-            idLoaiCongVan.includes(value) ||
-            viTri.includes(value) ||
-            noiDung.includes(value) ||
-            tep.includes(value) ||
-            noiDungTep.includes(value);
-    
-          $(this).toggle(match);
-        });
-      }
-    
+      const value = keyword.toLowerCase().trim();
+
+      $('#congVanTable tbody tr').each(function () {
+        const soHieu = $(this).find('.soHieu').text().toLowerCase();
+        const Ngay = $(this).find('.Ngay').text().toLowerCase();
+        const ID = $(this).find('.IdNoiPhatHanh').text().toLowerCase();
+        const viTri = $(this).find('.viTri').text().toLowerCase();
+        const noiDung = $(this).find('.noiDung').text().toLowerCase();
+        const tep = $(this).find('.Tep').text().toLowerCase();
+        const noiDungTep = $(this).find('.noiDungTep').text().toLowerCase();
+
+        const match =
+          soHieu.includes(value) ||
+          Ngay.includes(value) ||
+          ID.includes(value) ||
+          viTri.includes(value) ||
+          noiDung.includes(value) ||
+          tep.includes(value) ||
+          noiDungTep.includes(value);
+
+        $(this).toggle(match);
+      });
+    }
+
 });
 
         

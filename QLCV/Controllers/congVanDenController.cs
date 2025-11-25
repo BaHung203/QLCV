@@ -1,24 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApp.ModelUI;
 using WebApp.Services;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
+using WebApp.Libs;
 
 namespace WebApp.Controllers
 {
-    public class CongVanDiController : Controller
+    public class CongVanDenController : Controller
     {
-        private readonly ICongVanDiService _service;
+        private readonly ICongVanDenService _service;
 
-        public CongVanDiController(ICongVanDiService service)
+        public CongVanDenController(ICongVanDenService service)
         {
             _service = service;
         }
 
-         public async Task<IActionResult> Index(string keyword,int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string keyword, int page = 1, int pageSize = 10)
         {
             var result = await _service.GetAllAsync(keyword, page, pageSize);
             return View(result);
         }
+
 
         public IActionResult Create() => View();
 
@@ -28,16 +31,18 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 await _service.CreateAsync(model);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             return View(model);
         }
+
         public async Task<IActionResult> Details(int id)
         {
             var cv = await _service.GetByIdAsync(id);
             if (cv == null) return NotFound();
             return View(cv);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -48,7 +53,7 @@ namespace WebApp.Controllers
             {
                 ID = cv.ID,
                 LoaiCongVan = cv.LoaiCongVan,
-                IdNoiNhan = cv.IdNoiNhan,
+                IdNoiPhatHanh = cv.IdNoiPhatHanh,
                 Ngay = cv.Ngay,
                 SoHieu = cv.SoHieu,
                 ViTri = cv.ViTri,
@@ -61,12 +66,12 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CongVanCreateModel model)
+        public async Task<IActionResult> Edit(int id, CongVanUpdateModel model)
         {
             if (ModelState.IsValid)
             {
                 await _service.UpdateAsync(id, model);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             return View(model);
         }
@@ -74,9 +79,8 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
-
         public async Task<IActionResult> Download(int id)
         {
             var bytes = await _service.DownloadAsync(id);
@@ -84,12 +88,14 @@ namespace WebApp.Controllers
             var fileName = cv?.TepDinhKem?.Substring(cv.TepDinhKem.LastIndexOf('\\') + 1) ?? "file.bin";
             return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetNoiNhan()
+        public async Task<IActionResult> GetNoiPhatHanh()
         {
-           var noiNhans = await _service.GetNoiNhanAsync();
-            return Json(noiNhans);
+           var noiPhatHanhs = await _service.GetNoiPhatHanhAsync();
+            return Json(noiPhatHanhs);
 
         }
+    
     }
 }
