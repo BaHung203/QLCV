@@ -42,7 +42,7 @@
             
             <div class="mb-3 col-md-6">
               <label for="NoiDungTep" class="form-label">Nội dung ghi chú cho tệp</label>
-              <textarea class="form-control" id="NoiDungTep" name="NoiDungTep">@Model?.NoiDungTep</textarea>
+              <textarea class="form-control" disabled id="NoiDungTep"  name="NoiDungTep">@Model?.NoiDungTep</textarea>
             </div>
           </div>
         </div>
@@ -71,7 +71,6 @@ $(document).ready(function() {
             'NoiDung',
             'Vitri',
             'file',
-            'NoiDungTep'
         ];
         
         // Kiểm tra từng trường bắt buộc

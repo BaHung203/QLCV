@@ -57,52 +57,83 @@
         background: #555;
     }
     /* === THANH CUỘN ĐẸP CHO BẢNG === */
-    .table-responsive {
-        /* Đảm bảo bảng có thể cuộn ngang */
-        overflow-x: auto;
-        overflow-y: hidden; /* Ẩn cuộn dọc nếu không cần */
-        -webkit-overflow-scrolling: touch; /* Mượt trên mobile */
+    /* Sticky cột Trạng thái (tự co giãn theo nội dung) */
+    .sticky-column {
+        position: sticky !important;
+        right: 0 !important;
+        background-color: #fff !important;
+        z-index: 1000 !important;
+        white-space: nowrap; /* Giúp giữ nguyên độ rộng theo nội dung */
+        box-shadow: -2px 0 2px rgba(0, 0, 0, 0.1);
+    }
+    .sticky-col-1,
+    .sticky-col-2,
+    .sticky-col-3 {
+        position: sticky;
+        left: 0;
+        background-color: #fff;
+        z-index: 3; /* Để nằm trên các cột khác */
+    }
+    /* Sticky header của cột Trạng thái */
+    thead th.sticky-column {
+        background-color: #f8f9fa !important;
     }
 
-        /* WebKit (Chrome, Edge, Safari) */
-        .table-responsive::-webkit-scrollbar {
-            height: 10px; /* Chiều cao thanh cuộn ngang */
-        }
-
-        .table-responsive::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb {
-            background: #a0a0a0;
-            border-radius: 10px;
-            border: 2px solid #f1f1f1;
-        }
-
-            .table-responsive::-webkit-scrollbar-thumb:hover {
-                background: #707070;
-            }
-
-    /* Firefox */
-    .table-responsive {
-        scrollbar-width: thin;
-        scrollbar-color: #a0a0a0 #f1f1f1;
+    /* Các cột khác */
+    .table th, .table td {
+        position: relative;
+        z-index: 1 !important;
     }
+
+    /* Container table có horizontal scroll */
+    .table-responsive {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+        /* Đảm bảo table đủ rộng để scroll */
+        .table-responsive table {
+            width: max-content; /* QUAN TRỌNG: bảng rộng theo nội dung */
+            min-width: 100%; /* Không bị co nhỏ quá */
+        }
+/* Thu nhỏ thanh cuộn cho .table-responsive */
+.table-responsive::-webkit-scrollbar {
+    height: 10px;     /* ⚡ chỉnh chiều cao thanh cuộn ngang */
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #9e9e9e;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+    
+}
 </style>
 <div class="container-fluid">
     <div class="card">
         <div class="card-body">
             <div class="row mb-1">
                 <div class="col-md-3">
-                    <div class="input-group rounded">
-                        <input type="search" class="form-control" id="searchInput" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-                        <span class="input-group-text border-0 btn btn-primary" id="search-addon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                            </svg>
-                        </span>
-                    </div>
+                    <form method="get" class="mb-3">
+                        <div class="input-group rounded">
+                            <input type="search" class="form-control" name="keyword" value="@ViewBag.Keyword" placeholder="Search..." />
+                            <button class="input-group-text border-0 btn btn-primary" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001
+                                    q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1z 
+                                    M12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-md-6">
                 </div>
@@ -113,7 +144,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered rounded">
+                <table class="table table-bordered table-hover rounded">
                     <thead>
                         <tr class="text-center bg-light">
                             <th scope="col" class="sticky-col-1">STT</th>
@@ -124,7 +155,7 @@
                             <th scope="col">Nội dung</th>
                             <th scope="col">Tệp đính kèm</th>
                             <th scope="col">Nội dung tệp</th>
-                            <th scope="col" class="sticky-column">Trạng thái</th> <!-- Sticky column -->
+                            <th scope="col" class="sticky-column">Thao tác</th> <!-- Sticky column -->
                         </tr>
                     </thead>
                     <tbody class="congVanTable">
@@ -135,8 +166,8 @@
                         {
                             <tr>
                                 <td class="text-center sticky-col-1">@STT</td> <!-- Hiển thị số thứ tự -->
-                                <td class="soHieu sticky-col-2">@item.SoHieu</td>
-                                <td class="ngayDen sticky-col-3">@item.Ngay.ToString("dd/MM/yyyy")</td>
+                                <td class="soHieu text-center sticky-col-2">@item.SoHieu</td>
+                                <td class="ngayDen text-center sticky-col-3">@item.Ngay.ToString("dd/MM/yyyy")</td>
                                 <td class="IdNoiPhatHanh">@item.NoiPhatHanh</td>
                                 <td class="viTri">@item.ViTri</td>
                                 <td class="noiDung">@item.NoiDung</td>
@@ -185,7 +216,7 @@
                                         {
                                             <li class="page-item @(i == Model.Page ? "active" : "")">
                                                 <a class="page-link" href="?page=@i">@i</a>
-                                            </li>
+                                            </li>   
                                         }
 
                                         <!-- Nút "Sau" -->
@@ -207,7 +238,7 @@
     </div>
 </div>
 
-@Html.Partial(partialViewName: "Create", model: new WebApp.ModelUI.CongVanCreateModel());
-@Html.Partial(partialViewName: "Edit", model: new WebApp.ModelUI.CongVanUpdateModel());
+@Html.Partial(partialViewName: "Create", model: new WebApp.ModelUI.CongVanCreateModel())
+@Html.Partial(partialViewName: "Edit", model: new WebApp.ModelUI.CongVanUpdateModel())
 <script src="~/js/CongVanDen.js"></script>
 <link rel="stylesheet" href="../assets/css/styles.min.css" />

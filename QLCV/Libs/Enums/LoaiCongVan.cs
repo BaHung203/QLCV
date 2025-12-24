@@ -5,4 +5,9 @@ namespace WebApp.Libs{
         CongVanDi = 2,
         CongVanNoiBo = 3
     }
+    public enum TrangThaiXuLy{
+        DangCho,    // Chờ xử lý
+        DangXuLy,   // Đang xử lý
+        DaHoanThanh 
+    }   
 }

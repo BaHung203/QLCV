@@ -1,186 +1,124 @@
 @{
-    Layout = null; // để không hiện sidebar, navbar
-    ViewData[index: "Title"] = "Đăng nhập";
-}
-<!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DOCEYE</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/hinh2.png" />
-  <link rel="stylesheet" href="../assets/css/styles.min.css" />
-</head>
-
-@{
     Layout = null;
     ViewData["Title"] = "Đăng nhập";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="~/assets/css/styles.min.css" />
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Đăng nhập - DOCEYE</title>
 
-<style>
-    body {
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Segoe UI", sans-serif;
-    }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/styles.min.css" />
 
-    .card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f5f6fa;
+        }
 
-    .card:hover {
-        transform: translateY(-3px);
-    }
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
-    .logo-img img {
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-    }
+        .card:hover {
+            transform: translateY(-3px);
+        }
 
-    .form-label {
-        font-weight: 500;
-        color: #2d3436;
-    }
+        .form-label {
+            font-weight: 500;
+        }
 
-    .form-control {
-        border-radius: 12px;
-        padding: 10px 14px;
-        border: 1px solid #dfe6e9;
-        transition: border-color 0.3s;
-    }
+        .form-control {
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid #dfe6e9;
+        }
 
-    .form-control:focus {
-        border-color: #0984e3;
-        box-shadow: 0 0 0 0.25rem rgba(9, 132, 227, 0.25);
-    }
+        .form-control:focus {
+            border-color: #0984e3;
+            box-shadow: 0 0 0 0.25rem rgba(9, 132, 227, 0.25);
+        }
 
-    .btn-primary {
-        background-color: #0984e3;
-        border: none;
-        border-radius: 12px;
-        padding: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-    }
+        .btn-primary {
+            background-color: #0984e3;
+            border-radius: 12px;
+            padding: 10px;
+            font-weight: 600;
+        }
 
-    .btn-primary:hover {
-        background-color: #0077cc;
-        transform: translateY(-2px);
-    }
+        .btn-primary:hover {
+            background-color: #0077cc;
+        }
 
-    .register-link {
-        text-align: right;
-        margin-top: 15px;
-    }
-
-    .register-link a {
-        color: #0984e3;
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .register-link a:hover {
-        text-decoration: underline;
-    }
-
-    .alert {
-        border-radius: 12px;
-        font-weight: 500;
-    }
-</style>
+        .alert {
+            border-radius: 12px;
+        }
+    </style>
+</head>
 
 <body>
+
     <div class="container d-flex align-items-center justify-content-center min-vh-100">
         <div class="col-md-8 col-lg-5 col-xxl-3">
             <div class="card">
                 <div class="card-body">
-                    <a href="/" class="text-nowrap logo-img text-center d-block mb-4">
-                        <img src="~/assets/images/logos/hing1.png" width="160" alt="Logo hệ thống">
-                    </a>
 
+                    <div class="text-center mb-4">
+                        <img src="~/assets/images/logos/hing1.png" width="160" alt="Logo DOCEYE">
+                    </div>
+
+                    @* Hiển thị lỗi *@
                     @if (ViewBag.Error != null)
                     {
                         <div class="alert alert-danger text-center">@ViewBag.Error</div>
                     }
 
+                    @* Thông báo sau khi đăng ký *@
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success text-center">@TempData["Success"]</div>
+                    }
+
                     <form method="post" asp-controller="Login" asp-action="Login">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Tên đăng nhập</label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Nhập tên đăng nhập..." required>
+                            <label class="form-label">Tên đăng nhập</label>
+                            <input type="text" class="form-control" name="username" placeholder="Nhập tên đăng nhập..." required>
                         </div>
 
                         <div class="mb-4">
-                            <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Nhập mật khẩu..." required>
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu..." required>
                         </div>
 
-                        <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex justify-content-between mb-4">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="rememberMe" checked>
-                                <label class="form-check-label text-dark" for="rememberMe">
-                                    Lưu tài khoản
-                                </label>
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">Lưu tài khoản</label>
                             </div>
+
                             <a href="/Login/Register" class="text-primary fw-medium">Đăng ký</a>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
                     </form>
 
-                    <div class="register-link mt-3 text-center">
+                    <div class="text-center mt-3">
                         <small>Quên mật khẩu? <a href="#">Khôi phục tại đây</a></small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
-
-
 </html>
-@* @{
-    Layout = null; // để không hiện sidebar, navbar
-    ViewData["Title"] = "Đăng nhập";
-}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Đăng nhập - Modernize</title>
-    <link rel="stylesheet" href="~/assets/css/styles.min.css" />
-</head>
-<body>
-    <div class="d-flex align-items-center justify-content-center vh-100 bg-light">
-        <div class="card shadow p-5" style="width: 400px;">
-            <h3 class="text-center mb-4">Đăng nhập</h3>
-
-            @if (ViewBag.Error != null)
-            {
-                <div class="alert alert-danger">@ViewBag.Error</div>
-            }
-
-            <form method="post" asp-controller="Login" asp-action="Login">
-                <div class="form-group mb-3">
-                    <label for="username">Tên đăng nhập</label>
-                    <input type="text" name="username" class="form-control" required />
-                </div>
-                <div class="form-group mb-3">
-                    <label for="password">Mật khẩu</label>
-                    <input type="password" name="password" class="form-control" required />
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
-            </form>
-        </div>
-    </div>
-</body>
-</html> *@

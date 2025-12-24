@@ -1,0 +1,91 @@
+@model IEnumerable<WebApp.Models.nhanVien>
+@using WebApp.Libs
+
+@{
+    ViewData["Title"] = "Phân quyền nhân viên";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+    var allPermissions = ViewBag.AllPermissions as List<WebApp.Models.Permission>;
+}
+
+<h2>Phân quyền nhân viên</h2>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="text-center bg-light">
+                            <th>STT</th>
+                            <th>Nhân viên</th>
+                            @foreach(var perm in allPermissions!)
+                            {
+                                <th>@perm.Name</th>
+                            }
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int stt = 1;
+                        }
+                        @foreach(var nv in Model)
+                        {
+                            <tr>
+                                <td>@stt</td>
+                                <td>@nv.HoTen</td>
+                                @foreach(var perm in allPermissions!)
+                                {
+                                    var hasPerm = nv.NhanVienPermission.Any(p => p.PermissionId == perm.Id);
+                                    <td class="text-center">
+                                        <input type="checkbox" class="perm-checkbox" 
+                                            data-nhanvien="@nv.IdNhanVien" 
+                                            data-permission="@perm.Id"
+                                            @(hasPerm ? "checked" : "") 
+                                            @(nv.Account != null && nv.Account.Role == UserRole.Admin ? "disabled" : "") />
+                                    </td>
+                                }
+                                <td>
+                                    <button class="btn btn-sm btn-primary save-btn" data-nhanvien="@nv.IdNhanVien">Lưu</button>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="../assets/css/styles.min.css" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.save-btn').click(function() {
+                var nhanVienId = $(this).data('nhanvien');
+                var selectedPermissions = [];
+
+                $('input.perm-checkbox[data-nhanvien="' + nhanVienId + '"]:checked').each(function() {
+                    selectedPermissions.push($(this).data('permission'));
+                });
+
+                $.ajax({
+                    url: '@Url.Action("UpdatePermissions", "Login")',
+                    type: 'POST',
+                    data: {
+                        nhanVienId: nhanVienId,
+                        selectedPermissions: selectedPermissions
+                    },
+                    success: function(res) {
+                        if(res.success) {
+                            alert(res.message);
+                        }
+                    },
+                    error: function() {
+                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    }
+                });
+            });
+        });
+    </script>
+}

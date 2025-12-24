@@ -17,9 +17,9 @@ namespace WebApp.Controllers
             _hubContext = hubContext;
         }
 
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string keyword, int page = 1, int pageSize = 10)
         {
-            var dsNhanVien = await _service.GetAllAsync(page, pageSize);
+            var dsNhanVien = await _service.GetAllAsync(keyword ,page, pageSize);
             return View(dsNhanVien);
         }
 

@@ -1,0 +1,78 @@
+@model IEnumerable<WebApp.Models.XuLyCongVan>
+@using WebApp.Libs
+@{
+    var congVan = ViewBag.CongVan as WebApp.Models.congVan;
+    ViewData["Title"] = "Lịch sử xử lý";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // === XÁC ĐỊNH CONTROLLER QUAY LẠI ===
+    string controllerDetails;
+
+    if (congVan == null)
+    {
+        controllerDetails = "CongVanDen"; // fallback
+    }
+    else
+    {
+        switch (congVan.LoaiCongVan)
+        {
+            case LoaiCongVan.CongVanDen:
+                controllerDetails = "CongVanDen";
+                break;
+
+            case LoaiCongVan.CongVanDi:
+                controllerDetails = "CongVanDi";
+                break;
+
+            default:
+                controllerDetails = "CongVanDen";
+                break;
+        }
+    }
+}
+
+<h3 class="mb-3">Lịch sử xử lý - Công văn: @congVan?.SoHieu</h3>
+
+<table class="table table-bordered shadow-sm">
+    <thead class="bg-light">
+        <tr class="text-center">
+            <th>Ngày</th>
+            <th>Người xử lý</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+        {
+            <tr>
+                <td class="text-center">@item.NgayXuLy.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@item.NhanVien?.HoTen</td>
+                <td class="text-center">
+                    @if (item.TrangThai == TrangThaiXuLy.DangCho)
+                    {
+                        <span class="badge bg-secondary">Đang chờ</span>
+                    }
+                    else if (item.TrangThai == TrangThaiXuLy.DangXuLy)
+                    {
+                        <span class="badge bg-warning text-dark">Đang xử lý</span>
+                    }
+                    else if (item.TrangThai == TrangThaiXuLy.DaHoanThanh)
+                    {
+                        <span class="badge bg-success">Đã xử lý</span>
+                    }
+                </td>
+                <td>@item.GhiChu</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="@controllerDetails"
+   asp-action="Details"
+   asp-route-id="@congVan?.ID"
+   class="btn btn-secondary mt-2">
+    Quay lại
+</a>
+
+<link rel="stylesheet" href="~/assets/css/styles.min.css" />

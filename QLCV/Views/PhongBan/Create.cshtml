@@ -18,7 +18,9 @@
 
             <div class="mb-3 col-md-6">
               <label for="IdTruongPhong" class="form-label">Trưởng phòng</label>
-              <input type="text" class="form-control" id="IdTruongPhong" name="IdTruongPhong" value="@Model?.IdTruongPhong" />
+              <select class="form-select" id="createIdNhanVien" name="IdTruongPhong">
+                  <option value="">-- Chọn Trưởng phòng --</option>
+              </select>
             </div>
 
             <div class="mb-3 col-md-6">
@@ -80,4 +82,24 @@
           $(this).next('.invalid-feedback').remove();
       });
   });
+   $(document).ready(function () {
+        $.ajax({
+            url: '/PhongBan/GetNhanVien',
+            type: 'GET',
+            success: function (data) {
+                console.log(data); 
+                const select = $('#createIdNhanVien');
+                select.empty();
+                select.append('<option value="">-- Chọn Trưởng phòng --</option>');
+                
+                $.each(data, function (i, item) {
+                    select.append(`<option value="${item.idNhanVien}">${item.hoTen}</option>`);
+                });
+                
+            },
+            error: function () {
+                console.log("Lỗi khi tải danh sách phòng ban");
+            }
+        });
+    });
 </script>

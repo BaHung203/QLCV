@@ -1,7 +1,16 @@
 @model WebApp.Models.congVan
+@using WebApp.Data
+@using Microsoft.EntityFrameworkCore
 @{
     ViewData["Title"] = "Chi tiết công văn đi";
     Layout = "~/Views/Shared/_Layout.cshtml"; 
+    AppDbContext _db = Context.RequestServices.GetService(typeof(AppDbContext)) as AppDbContext;
+
+    var latest = _db.XuLyCongVan
+        .Include(x => x.NhanVien)
+        .Where(x => x.IdCongVan == Model.ID)
+        .OrderByDescending(x => x.NgayXuLy)
+        .FirstOrDefault();
 }
 
 <div class="container-fluid">
@@ -9,6 +18,42 @@
         <div class="text-center">
             <h2 class="mb-4">Chi tiết công văn đi</h2>
         </div>
+        <div class="mb-3 p-3 border rounded bg-light">
+        <h5>Trạng thái xử lý hiện tại:</h5>
+
+        @if (latest == null)
+        {
+            <span class="badge bg-secondary">Chưa xử lý</span>
+        }
+        else
+        {
+            if (latest.TrangThai == WebApp.Libs.TrangThaiXuLy.DangCho)
+            {
+                <span class="badge bg-secondary">Đang chờ</span>
+            }
+            else if (latest.TrangThai == WebApp.Libs.TrangThaiXuLy.DangXuLy)
+            {
+                <span class="badge bg-warning text-dark">Đang xử lý</span>
+            }
+            else if (latest.TrangThai == WebApp.Libs.TrangThaiXuLy.DaHoanThanh)
+            {
+                <span class="badge bg-success">Đã xử lý</span>
+            }
+
+            <div><b>Người xử lý:</b> @latest.NhanVien?.HoTen</div>
+            <div><b>Ghi chú:</b> @latest.GhiChu</div>
+            <div><b>Ngày xử lý:</b> @latest.NgayXuLy.ToString("dd-MM-yyyy HH:mm")</div>
+        }
+
+        <div class="mt-2">
+            <a asp-controller="XuLyCongVan" asp-action="Create" asp-route-congVanId="@Model.ID" class="btn btn-primary btn-sm">
+                Xử lý / Ghi nhận
+            </a>
+            <a asp-controller="XuLyCongVan" asp-action="History" asp-route-congVanId="@Model.ID" class="btn btn-secondary btn-sm">
+                Xem lịch sử xử lý
+            </a>
+        </div>
+    </div>
         <table id="myTable" class="table table-bordered">
             <tr>
                 <th>Số hiệu</th>
@@ -19,8 +64,8 @@
                 <td>@Model.Ngay.ToString("dd-MM-yyyy")</td>
             </tr>
             <tr>
-                <th>ID Nơi nhận</th>
-                <td>@Model.IdNoiNhan</td>
+                <th>Nơi nhận</th>
+                <td>@Model.NoiNhan?.TenNoiNhan</td>
             </tr>
             
             <tr>
@@ -174,6 +219,22 @@
                 $('#previewModalLabel').text('Không hỗ trợ xem trước');
                 modal.show();
             }
+            $.ajax({
+                url: '/congVanDi/GetNoiNhan', // đổi đúng tên controller/action bạn tạo
+                type: 'GET',
+                success: function (data) {
+                    const select = $('#createIdNoiNhan');
+                    select.empty(); // xóa option cũ
+                    select.append('<option value="">-- Chọn nơi nhận --</option>');
+
+                    $.each(data, function (i, item) {
+                        select.append(`<option value="${item.id}">${item.tenNoiNhan}</option>`);
+                    });
+                },
+                error: function () {
+                    console.log("Lỗi khi tải danh sách nơi phát hành");
+                }
+            });
         }
     </script>
 }

@@ -10,8 +10,9 @@ namespace WebApp.Models
     {
         [Key]
         public int ID { get; set; }
-
-        public string? SoHieu { get; set; }
+        [Required(ErrorMessage = "Số hiệu công văn không được để trống")]
+        [StringLength(50, ErrorMessage = "Số hiệu tối đa 50 ký tự")]
+        public string SoHieu { get; set; } = null!;
 
         public DateTime Ngay { get; set; }
 
@@ -32,6 +33,9 @@ namespace WebApp.Models
 
         [StringLength(255)]
         public string? TepDinhKem { get; set; }
-         public string? NoiDungTep { get; set; }
+        public string? NoiDungTep { get; set; }
+         // trong nhanVien
+        public virtual ICollection<XuLyCongVan> XuLyCongVan { get; set; } = new List<XuLyCongVan>();
+
     }
 }

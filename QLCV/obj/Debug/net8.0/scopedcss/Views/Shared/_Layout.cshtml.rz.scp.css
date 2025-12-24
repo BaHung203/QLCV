@@ -45,6 +45,7 @@ button.accept-policy[b-bs3a3isgey] {
   width: 100%;
   white-space: nowrap;
   line-height: 60px;
+  z-index: 1030;
 }
 a[b-bs3a3isgey]{
   text-decoration: underline;

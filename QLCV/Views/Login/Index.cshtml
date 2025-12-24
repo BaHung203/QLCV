@@ -1,6 +1,7 @@
 @model WebApp.ModelUI.PagedResult<WebApp.Models.Account>
 @using System.Text.Json
 @using System.Text.Json.Serialization
+@using WebApp.Libs
 
 
 @{
@@ -37,14 +38,18 @@
             <div class="row mb-1">
                 <!-- Search -->
                 <div class="col-md-3">
-                    <div class="input-group rounded">
-                        <input type="search" class="form-control" id="searchInput" placeholder="Tìm kiếm..." aria-label="Search" aria-describedby="search-addon" />
-                        <span class="input-group-text border-0 btn btn-primary" id="search-addon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                            </svg>
-                        </span>
-                    </div>
+                    <form method="get" action="/Account/Index">
+                        <div class="input-group rounded mb-3">
+                            <input type="search" class="form-control" id="searchInput"  name="key" placeholder="Search..." />
+                            <button class="input-group-text border-0 btn btn-primary" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001
+                                    q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1z 
+                                    M12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-md-6">
                 </div>
@@ -57,7 +62,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-bordered rounded">
+                <table class="table table-bordered table-hover rounded">
                     <thead>
                         <tr class="text-center bg-light">
                             <th>STT</th>
@@ -67,7 +72,7 @@
                             <th class="sticky-column">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody id="phongBanTable">
+                    <tbody id="loginTable">
                         @{
                             int stt = 1;
                         }
@@ -75,27 +80,27 @@
                         {
                             <tr>
                                 <td class="text-center">@stt</td>
-                                <td class="tenPhongBan">@item.Username</td>
-                                <td class="truongPhong">@item.Email</td>
-                                <td class="soDienThoai text-center">@if (item.Role == "Admin")
+                                <td class="Username">@item.Username</td>
+                                <td class="Email">@item.Email</td>
+                                <td class="Role text-center">@if (item.Role == UserRole.Admin )
                                 {
                                     <span class="badge-role badge-admin">Admin</span>
                                 }
-                                else if (item.Role == "Employee")
+                                else if (item.Role == UserRole.Employee)
                                 {
-                                    <span class="badge-role badge-editor">Employee</span>
+                                    <span class="badge-role badge-editor">Trưởng Phòng</span>
                                 }
                                 else
                                 {
-                                    <span class="badge-role badge-user">User</span>
+                                    <span class="badge-role badge-user">Nhân Viên</span>
                                 }</td>
                                 <td class="text-center d-flex sticky-column"> <!-- Sticky column -->
-                                    <button class="btn btn-sm btn-primary btn-edit btnEdit" data-item="@JsonSerializer.Serialize(item)" data-id="@item.Id">
+                                    @* <button class="btn btn-sm btn-primary btn-edit btnEdit" data-item="@JsonSerializer.Serialize(item)" data-id="@item.Id">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                                         </svg>
-                                    </button>
+                                    </button> *@
                                   
                                     <button class="btn btn-sm btn-danger btn-delete" data-id="@item.Id">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">

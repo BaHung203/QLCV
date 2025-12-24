@@ -20,5 +20,11 @@ namespace WebApp.Models
 
          // Navigation property
         public virtual  phongBan? PhongBan { get; set; } 
+        public virtual ICollection<NhanVienPermission> NhanVienPermission { get; set; } = new List<NhanVienPermission>();
+         // Navigation property đến Account (nếu có)
+        public virtual Account? Account { get; set; }
+        // ở cuối class congVan, thêm:
+        public virtual ICollection<XuLyCongVan> XuLyLichSu { get; set; } = new List<XuLyCongVan>();
+
     }
 }

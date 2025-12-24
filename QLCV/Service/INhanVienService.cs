@@ -5,7 +5,7 @@ namespace WebApp.Services
 {
     public interface INhanVienService
     {
-        Task<PagedResult<nhanVien>> GetAllAsync(int page, int pageSize);
+        Task<PagedResult<nhanVien>> GetAllAsync(string keyword, int page, int pageSize);
         Task<nhanVien?> GetByIdAsync(int id);
         Task<List<phongBan>> GetPhongBanListAsync();
         Task CreateAsync(nhanVien nv);

@@ -8,19 +8,19 @@ document.addEventListener('DOMContentLoaded', function () {
         .withUrl("/notificationHub")
         .build();
 
-    connection.on("ReceiveNotification", (data) => {
+    connection.on("ReceiveNotification", (title, message) => {
         const li = document.createElement("li");
         li.innerHTML = `
             <a class="dropdown-item" href="#">
-                <strong>${data.tieuDe}</strong><br>
-                <small class="text-muted">${data.ngayTao}</small>
+                <strong>${title}</strong><br>
+                <small class="text-muted">${message}</small>
             </a>`;
-        list.insertBefore(li, list.children[2]); // chèn lên đầu danh sách
+        list.prepend(li);
 
-        // tăng số thông báo
         let count = parseInt(badge.textContent) || 0;
         badge.textContent = count + 1;
     });
+
 
     connection.start().catch(err => console.error(err.toString())); // Tự động reload mỗi 10s
 

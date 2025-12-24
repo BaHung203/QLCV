@@ -25,26 +25,29 @@ namespace WebApp.Services
             _env = env;
         }
 
-       public async Task<PagedResult<CongVanDetailModel>> GetAllAsync(string keyword,int page, int pageSize)
+        public async Task<PagedResult<CongVanDetailModel>> GetAllAsync(string keyword, int page, int pageSize)
         {
             keyword = keyword?.Trim().ToLower() ?? string.Empty;
+
             var query = _context.CongVan
                 .Include(i => i.NoiNhan)
-                .Where(w => w.LoaiCongVan == LoaiCongVan.CongVanDi);
+                .Include(x => x.XuLyCongVan)
+                .Where(w => w.LoaiCongVan == LoaiCongVan.CongVanDi)
+                .AsQueryable();
+
             if (!string.IsNullOrEmpty(keyword))
             {
                 query = query.Where(c =>
-                c.SoHieu.ToLower().Contains(keyword) ||
-                c.NoiNhan.TenNoiNhan.ToLower().Contains(keyword) ||
-                c.ViTri.ToLower().Contains(keyword) ||
-                c.NoiDung.ToLower().Contains(keyword) ||
-                c.NoiDungTep.ToLower().Contains(keyword) 
+                    (c.SoHieu ?? "").ToLower().Contains(keyword) ||
+                    (c.NoiNhan.TenNoiNhan ?? "").ToLower().Contains(keyword) ||
+                    (c.ViTri ?? "").ToLower().Contains(keyword) ||
+                    (c.NoiDung ?? "").ToLower().Contains(keyword) ||
+                    (c.NoiDungTep ?? "").ToLower().Contains(keyword)
                 );
             }
-            // Tổng số bản ghi
+
             var totalItems = await query.CountAsync();
 
-            // Lấy dữ liệu cho trang hiện tại
             var items = await query
                 .OrderByDescending(c => c.Ngay)
                 .Skip((page - 1) * pageSize)
@@ -60,7 +63,12 @@ namespace WebApp.Services
                     TepDinhKem = c.TepDinhKem,
                     NoiDungTep = c.NoiDungTep,
                     IdNoiNhan = c.IdNoiNhan,
-                    File = File.Exists(c.TepDinhKem) ? File.ReadAllBytes(c.TepDinhKem) : Array.Empty<byte>()
+                    File = File.Exists(c.TepDinhKem) ? File.ReadAllBytes(c.TepDinhKem) : Array.Empty<byte>(),
+                    TrangThai = c.XuLyCongVan
+                    .OrderByDescending(x => x.NgayXuLy)
+                    .Select(x => x.TrangThai.ToString())
+                    .FirstOrDefault() 
+                    ?? "Chưa xử lý",
                 })
                 .ToListAsync();
 
@@ -75,7 +83,10 @@ namespace WebApp.Services
 
         public async Task<congVan?> GetByIdAsync(int id)
         {
-            return await _context.CongVan.FirstOrDefaultAsync(x => x.ID == id);
+            return await _context.CongVan
+            .Include(x => x.NoiNhan)
+            .Include(x => x.XuLyCongVan)
+            .FirstOrDefaultAsync(x => x.ID == id);
         }
 
         public async Task CreateAsync(CongVanCreateModel cv)
@@ -133,12 +144,34 @@ namespace WebApp.Services
             var cv = await _context.CongVan.FindAsync(id);
             if (cv == null)
                 throw new Exception("Không tìm thấy công văn đi.");
-
+            var xuly = _context.XuLyCongVan.Where(x => x.IdCongVan == id);
+            _context.XuLyCongVan.RemoveRange(xuly);
             _context.CongVan.Remove(cv);
             await _context.SaveChangesAsync();
             await SendDocumentCountUpdate();
         }
+        public async Task AddXuLyAsync(int idCongVan, int idNhanVien, TrangThaiXuLy trangThai, string? ghiChu)
+        {
+            var x = new XuLyCongVan
+            {
+                IdCongVan = idCongVan,
+                IdNhanVien = idNhanVien,
+                TrangThai = trangThai,
+                GhiChu = ghiChu,
+                NgayXuLy = DateTime.Now
+            };
 
+            _context.XuLyCongVan.Add(x);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<XuLyCongVan>> GetXuLyByCongVanIdAsync(int id)
+        {
+            return await _context.XuLyCongVan
+                .Include(x => x.NhanVien)
+                .Where(x => x.IdCongVan == id)
+                .OrderByDescending(x => x.NgayXuLy)
+                .ToListAsync();
+        }
         public async Task<(string filePath, string extractedText)> UploadFileAsync(IFormFile? file)
         {
             if (file == null || file.Length == 0)

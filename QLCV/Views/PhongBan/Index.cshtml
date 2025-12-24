@@ -1,7 +1,7 @@
 @model IEnumerable<WebApp.Models.phongBan>
 @using System.Text.Json
 @using System.Text.Json.Serialization
-@using DocumentFormat.OpenXml.Office2010.Excel
+@using iText.StyledXmlParser.Node
 
 @{
     ViewData["Title"] = "Danh sách phòng ban";
@@ -64,14 +64,18 @@
             <div class="row mb-1">
                 <!-- Search -->
                 <div class="col-md-3">
-                    <div class="input-group rounded">
-                        <input type="search" class="form-control" id="searchInput" placeholder="Tìm kiếm phòng ban..." aria-label="Search" aria-describedby="search-addon" />
-                        <span class="input-group-text border-0 btn btn-primary" id="search-addon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                            </svg>
-                        </span>
-                    </div>
+                    <form method="get" class="mb-3">
+                        <div class="input-group rounded">
+                            <input type="search" class="form-control" name="keyword" value="@ViewBag.Keyword" placeholder="Search..." />
+                            <button class="input-group-text border-0 btn btn-primary" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001
+                                    q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1z 
+                                    M12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-md-6">
                 </div>
@@ -84,7 +88,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-bordered rounded">
+                <table class="table table-bordered table-hover rounded">
                     <thead>
                         <tr class="text-center bg-light">
                             <th>STT</th>
@@ -104,19 +108,25 @@
                             <tr>
                                 <td class="text-center">@stt</td>
                                 <td class="tenPhongBan">@item.TenPhongBan</td>
-                                <td class="truongPhong">@{
-                                        // Lấy tên trưởng phòng từ navigation property nếu có
-                                        var tenTruongPhong = item.nhanVien?.FirstOrDefault(nv => nv.IdNhanVien == item.IdTruongPhong)?.HoTen;
-                                    }
-                                    </td>
+                                <td class="truongPhong">
+                                    @item.nhanVien?.FirstOrDefault()?.HoTen
+                                </td>
                                 <td class="soDienThoai">@item.SoDienThoai</td>
-                                <td class="text-center d-flex sticky-column"> <!-- Sticky column -->
-                                    <button class="btn btn-sm btn-primary btn-edit btnEdit"  data-item="@JsonSerializer.Serialize(item)" data-id="@item.IdPhongBan">
+                                <td class="text-center d-flex sticky-column">
+                                    <button class="btn btn-sm btn-primary btn-edit btnEdit" data-idtrphong="@item.IdTruongPhong"
+                                            data-item='@JsonSerializer.Serialize(new
+                                        {
+                                            item.IdPhongBan,
+                                            item.TenPhongBan,
+                                            item.SoDienThoai
+                                        })'>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                                         </svg>
                                     </button>
+                                    <!-- Sticky column -->
+                                     
                                     <a class="btn btn-sm btn-info btn-Details" data-id="@item.IdPhongBan">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                                             <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
@@ -135,7 +145,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="5" class="text-center">
+                           <td colspan="5" class="text-center">
                                 <div id="pagination" class="pagination"></div>
                             </td>
                         </tr>

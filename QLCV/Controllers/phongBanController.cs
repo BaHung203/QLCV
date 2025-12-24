@@ -15,11 +15,20 @@ namespace WebApp.Controllers
         }
 
         // GET: /PhongBan
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index()
         {
             var dsPhongBan = await _context.phongBan.ToListAsync();
+
+            var dsNhanVien = await _context.nhanVien.ToListAsync();
+
+            foreach (var pb in dsPhongBan)
+            {
+                pb.nhanVien = dsNhanVien.Where(nv => nv.IdNhanVien == pb.IdTruongPhong).ToList();
+            }
+
             return View(dsPhongBan);
         }
+
 
         // GET: /PhongBan/Details/5
         public async Task<IActionResult> Details(int id)
@@ -119,12 +128,18 @@ namespace WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNhanVien()
         {
-            var nhanViens = await _context.nhanVien.ToListAsync();
-            return Json(nhanViens.Select(p => new
-            {
-                p.IdNhanVien,
-                p.HoTen
-            }));
+            var nhanViens = await _context.nhanVien
+                .Select(p => new
+                {
+                    p.IdNhanVien,
+                    p.HoTen
+                })
+                .ToListAsync();
+
+            return Json(nhanViens);
         }
+
+
+
     }
 }

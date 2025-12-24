@@ -63,14 +63,18 @@
             <div class="card-body">
                 <div class="row mb-1">
                     <div class="col-md-3">
-                        <div class="input-group rounded">
-                            <input type="search" class="form-control" id="searchInput" placeholder="Search nhân viên..." />
-                            <span class="input-group-text border-0 btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                </svg>
-                            </span>
-                        </div>
+                        <form method="get" class="mb-3">
+                            <div class="input-group rounded">
+                                <input type="search" class="form-control" name="keyword" value="@ViewBag.Keyword" placeholder="Search..." />
+                                <button class="input-group-text border-0 btn btn-primary" type="submit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001
+                                        q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1z 
+                                        M12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                     <div class="col-md-6"></div>
                     <div class="col-md-3 text-end">
@@ -81,7 +85,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-bordered rounded">
+                    <table class="table table-bordered table-hover rounded">
                         <thead>
                             <tr class="text-center bg-light">
                                 <th>STT</th>
@@ -115,9 +119,9 @@
                                 <tr>
                                     <td class="text-center">@stt</td>
                                     <td>@item.HoTen</td>
-                                    <td>@item.NgaySinh.ToString(format: "dd/MM/yyyy")</td>
+                                    <td class="text-center">@item.NgaySinh.ToString(format: "dd/MM/yyyy")</td>
                                     <td>@item.GioiTinh</td>
-                                    <td>@item.SoDienThoai</td>
+                                    <td class="text-center">@item.SoDienThoai</td>
                                     <td>@item.Email</td>
                                     <td>@item.ChucVu</td>
                                     <td>@item.PhongBan?.TenPhongBan</td>

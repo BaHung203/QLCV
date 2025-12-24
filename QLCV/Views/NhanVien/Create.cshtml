@@ -42,10 +42,18 @@
               <input class="form-control" id="ChucVuNV" name="ChucVu">@Model?.ChucVu</input>
             </div>
             <div class="mb-3 col-md-6">
-              <label for="ChucVu" class="form-label">Phòng ban</label>
+              <label for="IdPhongBan" class="form-label">Phòng ban</label>
               <select class="form-control" id="createIdPhongBan" name="IdPhongBan">
                 <option value="">-- Chọn phòng ban --</option>
               </select>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="username" class="form-label">Username</label>
+              <input class="form-control" id="username" name="username">@Model?.Account?.Username</input>
+            </div>
+             <div class="mb-3 col-md-6">
+              <label for="password" class="form-label">Password</label>
+              <input class="form-control" id="password" name="password">@Model?.Account?.Password</input>
             </div>
           </div>
         </div>

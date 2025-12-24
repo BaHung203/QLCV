@@ -13,11 +13,23 @@ namespace WebApp.Services
         {
             _context = context;
         }
-        public async Task<PagedResult<nhanVien>> GetAllAsync(int page, int pageSize)
+        public async Task<PagedResult<nhanVien>> GetAllAsync(string keyword, int page, int pageSize)
         {
+            keyword = keyword?.Trim().ToLower() ?? string.Empty;
+
             var query = _context.nhanVien
                 .Include(nv => nv.PhongBan)
                 .AsQueryable();
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(c =>
+                    (c.HoTen ?? "").ToLower().Contains(keyword) ||
+                    (c.GioiTinh ?? "").ToLower().Contains(keyword) ||
+                    (c.SoDienThoai ?? "").ToLower().Contains(keyword) ||
+                    (c.ChucVu ?? "").ToLower().Contains(keyword) ||
+                    (c.PhongBan.TenPhongBan ?? "").ToLower().Contains(keyword)
+                );
+            }
 
             var totalItems = await query.CountAsync();
 
@@ -49,6 +61,7 @@ namespace WebApp.Services
 
         public async Task CreateAsync(nhanVien nv)
         {
+            
             _context.Add(nv);
             await _context.SaveChangesAsync();
         }

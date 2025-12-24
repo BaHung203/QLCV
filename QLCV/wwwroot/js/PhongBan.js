@@ -36,38 +36,46 @@ document.addEventListener("DOMContentLoaded", function () {
         showPage(1);
     }
 });
-function loadEditNhanVien() {
+
+function loadNhanVien() {
     $.ajax({
         url: '/PhongBan/GetNhanVien',
         type: 'GET',
         success: function (data) {
-            const select = $('#IdEditNhanVien');
+            console.log(data); 
+            const select = $('#editIdNhanVien');
             select.empty();
-            select.append('<option value="">-- Chọn Nhân Viên --</option>');
-
+            select.append('<option value="">-- Chọn Trưởng phòng --</option>');
             $.each(data, function (i, item) {
-                select.append(`<option value="${item.HoTen}">${item.IdTruongPhong}</option>`);
+                select.append(`<option value="${item.idNhanVien}">${item.hoTen}</option>`);
             });
-
+            
         }
     });
 }
+
+
 $(document).ready(function () {
     $('.btnEdit').on('click', function () {
-        const data = $(this).data('item');
-        const nhanvienId = $(this).data('nhanvien');
+        const data = $(this).data('item'); 
+        const idTruongPhong = $(this).data('idtrphong'); 
 
-        loadEditNhanVien();
+       
+        loadNhanVien();
 
-        $('#modalEditPhongBan input[name="IdPhongBan"]').val(data.IdPhongBan);
+
+         $('#modalEditPhongBan input[name="IdPhongBan"]').val(data.IdPhongBan);
         $('#modalEditPhongBan input[name="TenPhongBan"]').val(data.TenPhongBan);
         $('#modalEditPhongBan input[name="IdTruongPhong"]').val(data.IdTruongPhong);
         $('#modalEditPhongBan input[name="SoDienThoai"]').val(data.SoDienThoai);
 
+        // show modal
         $('#modalEditPhongBan').modal('show');
-        setTimeout(() => $('#IdEditNhanVien').val(nhanvienId), 300);
 
+        // sau khi dropdown load xong, chọn trưởng phòng
+        setTimeout(() => $('#editIdNhanVien').val(idTruongPhong), 300); // giảm delay
     });
+
 
     
 
