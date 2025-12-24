@@ -129,13 +129,13 @@ namespace WebApp.Controllers
             if (user.IdNhanVien != null)
                 HttpContext.Session.SetInt32("IdNhanVien", user.IdNhanVien.Value);
 
-            List<string> permissionNames = new List<string>();
+            List<int> permissionIds = new List<int>();
 
             // Admin = full quyền
             if (user.Role == UserRole.Admin)
             {
-                permissionNames = await _context.Permission
-                    .Select(p => p.Name)
+                permissionIds = await _context.Permission
+                    .Select(p => p.Id)
                     .ToListAsync();
             }
             else
@@ -143,8 +143,8 @@ namespace WebApp.Controllers
                 // Nhân viên có quyền riêng
                 if (user.NhanVien != null)
                 {
-                    permissionNames = user.NhanVien.NhanVienPermission
-                        .Select(p => p.Permission.Name)
+                    permissionIds = user.NhanVien.NhanVienPermission
+                        .Select(p => p.Permission.Id)
                         .Distinct()
                         .ToList();
                 }
@@ -153,7 +153,7 @@ namespace WebApp.Controllers
             // Save permission vào session
             HttpContext.Session.SetString(
                 "Permissions",
-                System.Text.Json.JsonSerializer.Serialize(permissionNames)
+                System.Text.Json.JsonSerializer.Serialize(permissionIds)
             );
 
             return RedirectToAction("Index", "Home");

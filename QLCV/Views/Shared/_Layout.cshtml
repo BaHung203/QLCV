@@ -1,4 +1,10 @@
-﻿
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    var role = Context.Session.GetString("Role");
+    var userName = Context.Session.GetString("Username");
+}
+    <!-- ... rest of the file unchanged ... -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,38 +122,42 @@
                 <span class="hide-menu">Công văn đi</span>
               </a>
             </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="/Login/Index" aria-expanded="false">
-                <span>
-                  <i class="ti ti-users"></i>
-                </span>
-                <span class="hide-menu">Người dùng</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="/Login/PhanQuyen" aria-expanded="false">
-                <span>
-                  <i class="ti ti-users"></i>
-                </span>
-                <span class="hide-menu">Phân Quyền</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a href="/NhanVien/Index" class="sidebar-link">
-                <span>
-                  <i class="ti ti-id-badge"></i>
-                </span>
-                <span class="hide-menu">Quản lý nhân viên</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a href="/PhongBan/Index" class="sidebar-link">
-                <span>
-                  <i class="ti ti-building-community"></i>
-                </span>
-                <span class="hide-menu">Quản lý phòng ban</span>
-              </a>
-            </li>
+
+            @if (role == "Admin"){
+                <li class="sidebar-item">
+                  <a class="sidebar-link" href="/Login/Index" aria-expanded="false">
+                    <span>
+                      <i class="ti ti-users"></i>
+                    </span>
+                    <span class="hide-menu">Người dùng</span>
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link" href="/Login/PhanQuyen" aria-expanded="false">
+                    <span>
+                      <i class="ti ti-users"></i>
+                    </span>
+                    <span class="hide-menu">Phân Quyền</span>
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a href="/NhanVien/Index" class="sidebar-link">
+                    <span>
+                      <i class="ti ti-id-badge"></i>
+                    </span>
+                    <span class="hide-menu">Quản lý nhân viên</span>
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a href="/PhongBan/Index" class="sidebar-link">
+                    <span>
+                      <i class="ti ti-building-community"></i>
+                    </span>
+                    <span class="hide-menu">Quản lý phòng ban</span>
+                  </a>
+                </li>
+            }
+
             <li class="sidebar-item">
               <a href="/BaoCao/Index" class="sidebar-link">
                 <span>
@@ -168,14 +178,6 @@
                   <i class="ti ti-login"></i>
                 </span>
                 <span class="hide-menu">Đăng xuất</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="/Login/Register" aria-expanded="false">
-                <span>
-                  <i class="ti ti-user-plus"></i>
-                </span>
-                <span class="hide-menu">Đăng ký</span>
               </a>
             </li>
           </ul>
@@ -222,13 +224,13 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                 <div class="message-body">
-                                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <a class="d-flex align-items-center gap-2 dropdown-item">
                                         <i class="ti ti-user fs-6"></i>
-                                        <p class="mb-0 fs-3">Hồ sơ</p>
+                                        <p class="mb-0 fs-3">@userName</p>
                                     </a>
-                                    <a href="/Login/Index" class="d-flex align-items-center gap-2 dropdown-item">
-                                        <i class="ti ti-mail fs-6"></i>
-                                        <p class="mb-0 fs-3"> Quản lý tài khoản</p>
+                                    <a class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-shield-lock fs-6"></i>
+                                        <p class="mb-0 fs-3">@role</p>
                                     </a>
                                     <a href="/Login/login" class="btn btn-outline-primary mx-3 mt-2 d-block">Đăng xuất</a>
                                 </div>

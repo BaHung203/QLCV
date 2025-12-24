@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Data;
-using WebApp.Models;
-using WebApp.Libs;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
-using System.IO;
-using Microsoft.Extensions.Logging;
+using System.ComponentModel;
+using WebApp.Data;
+using WebApp.Libs;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -445,7 +444,7 @@ namespace WebApp.Controllers
         {
             try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage.License.SetNonCommercialPersonal("Ba Hung");
 
                 // Sử dụng cùng bộ lọc
                 var query = BuildFilterQuery(filter);

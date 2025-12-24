@@ -86,13 +86,9 @@
                                 {
                                     <span class="badge-role badge-admin">Admin</span>
                                 }
-                                else if (item.Role == UserRole.Employee)
-                                {
-                                    <span class="badge-role badge-editor">Trưởng Phòng</span>
-                                }
                                 else
                                 {
-                                    <span class="badge-role badge-user">Nhân Viên</span>
+                                    <span class="badge-role badge-user">Người dùng</span>
                                 }</td>
                                 <td class="text-center d-flex sticky-column"> <!-- Sticky column -->
                                     @* <button class="btn btn-sm btn-primary btn-edit btnEdit" data-item="@JsonSerializer.Serialize(item)" data-id="@item.Id">
