@@ -115,6 +115,13 @@
                                     Email = item.Email,
                                     ChucVu = item.ChucVu,
                                     PhongBan = item.PhongBan?.IdPhongBan,
+                                    Account = item.Account != null ? new
+                                    {
+                                        IdAccount = item.Account.Id,
+                                        Password = item.Account.Password,
+                                        Username = item.Account.Username,
+                                        Role = item.Account.Role.ToString()
+                                    } : null
                                 });
                                 <tr>
                                     <td class="text-center">@stt</td>

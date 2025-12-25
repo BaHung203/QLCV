@@ -1,3 +1,4 @@
+@using WebApp.Libs
 @model WebApp.Models.nhanVien
 
 @{
@@ -49,6 +50,44 @@
               </select>
             </div>
           </div>
+          <!-- Account section (edit) -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <strong>Account</strong>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                @* Hidden Account Id so binder updates existing account if present *@
+                <input type="hidden" name="Account.Id" value="@Model?.Account?.Id" />
+
+                <div class="mb-3 col-md-6">
+                  <label for="username" class="form-label">Username</label>
+                  <input class="form-control" id="username" name="Account.Username" value="@Model?.Account?.Username" />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="password" class="form-label">Password</label>
+                  <input class="form-control" id="password" name="Account.Password" type="password" value="@Model?.Account?.Password" />
+                </div>
+
+                <div class="mb-3 col-md-6">
+                  <label for="accountRole" class="form-label">Role</label>
+                  <select class="form-control" id="accountRole" name="Account.Role">
+                    <option value="">-- Chọn vai trò --</option>
+                    @foreach (WebApp.Libs.UserRole r in Enum.GetValues(typeof(UserRole)))
+                    {
+                        if(Model?.Account != null && Model.Account.Role == r)
+                        {
+                            <option value="@r" selected>@r.ToString()</option>               
+                        }else{
+                            <option value="@r">@r.ToString()</option>
+                        }
+                    }
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End account section -->
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Lưu</button>

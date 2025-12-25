@@ -19,6 +19,7 @@ namespace WebApp.Services
 
             var query = _context.nhanVien
                 .Include(nv => nv.PhongBan)
+                .Include(nv => nv.Account)
                 .AsQueryable();
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -51,6 +52,7 @@ namespace WebApp.Services
         {
             return await _context.nhanVien
                 .Include(nv => nv.PhongBan)
+                .Include(nv => nv.Account)
                 .FirstOrDefaultAsync(nv => nv.IdNhanVien == id);
         }
 
@@ -68,7 +70,10 @@ namespace WebApp.Services
 
         public async Task UpdateAsync(nhanVien nv)
         {
-            var existing = await _context.nhanVien.FindAsync(nv.IdNhanVien);
+            var existing = await _context.nhanVien
+               .Include(x => x.Account)
+               .FirstOrDefaultAsync(x => x.IdNhanVien == nv.IdNhanVien);
+
             if (existing == null) throw new Exception("Không tìm thấy nhân viên.");
 
             existing.HoTen = nv.HoTen;
@@ -78,6 +83,36 @@ namespace WebApp.Services
             existing.Email = nv.Email;
             existing.ChucVu = nv.ChucVu;
             existing.IdPhongBan = nv.IdPhongBan;
+
+            if (nv.Account != null)
+            {
+                if (existing.Account == null)
+                {
+                    // Create new account and link to employee
+                    var newAcc = new Account
+                    {
+                        Username = nv.Account.Username,
+                        // only set password if provided
+                        Password = string.IsNullOrEmpty(nv.Account.Password) ? "" : nv.Account.Password,
+                        Email = nv.Account.Email,
+                        Role = nv.Account.Role,
+                        IdNhanVien = existing.IdNhanVien
+                    };
+                    _context.Accounts.Add(newAcc);
+                    existing.Account = newAcc;
+                }
+                else
+                {
+                    // Update fields; only update password if non-empty (user didn't clear it)
+                    existing.Account.Username = nv.Account.Username;
+                    existing.Account.Email = nv.Account.Email;
+                    existing.Account.Role = nv.Account.Role;
+                    if (!string.IsNullOrEmpty(nv.Account.Password))
+                    {
+                        existing.Account.Password = nv.Account.Password;
+                    }
+                }
+            }
 
             _context.Update(existing);
             await _context.SaveChangesAsync();

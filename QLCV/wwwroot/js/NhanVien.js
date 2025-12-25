@@ -89,7 +89,52 @@ $(document).ready(function () {
     $('#modalEditNhanVien input[name="SoDienThoai"]').val(data.SoDienThoai);
     $('#modalEditNhanVien input[name="Email"]').val(data.Email);
     $('#modalEditNhanVien input[name="ChucVu"]').val(data.ChucVu);
-    loadEditPhongBan(data.idPhongBan);
+        loadEditPhongBan(data.idPhongBan);
+    const $roleSelect = $('#modalEditNhanVien select[name="Account.Role"]');
+    if (data.Account) {
+        $('#modalEditNhanVien input[name="Account.Id"]').val(data.Account.IdAccount ?? '');
+        $('#modalEditNhanVien input[name="Account.Username"]').val(data.Account.Username ?? '');
+        // It's common to leave password blank to avoid showing it; here we prefill if provided:
+        $('#modalEditNhanVien input[name="Account.Password"]').val(data.Account.Password ?? '');
+        // set role (enum string expected)
+        // robust role selection: try value, then match by text, then numeric index fallback
+        const roleVal = data.Account.Role;
+        if (roleVal === null || roleVal === undefined || roleVal === '') {
+            $roleSelect.val('');
+        } else {
+            const roleStr = roleVal.toString();
+            if ($roleSelect.find(`option[value="${roleStr}"]`).length) {
+                $roleSelect.val(roleStr);
+            } else {
+                // try match by option text (case-insensitive)
+                let matchedVal = '';
+                $roleSelect.find('option').each(function () {
+                    if ($(this).text().toLowerCase() === roleStr.toLowerCase()) {
+                        matchedVal = $(this).val();
+                        return false;
+                    }
+                });
+                if (matchedVal) {
+                    $roleSelect.val(matchedVal);
+                } else if (!isNaN(roleVal)) {
+                    // fallback: if server sent numeric enum, try using option index
+                    const idx = parseInt(roleVal, 10);
+                    const opt = $roleSelect.find('option').eq(idx);
+                    if (opt.length) $roleSelect.val(opt.val());
+                    else $roleSelect.val('');
+                } else {
+                    $roleSelect.val('');
+                }
+            }
+        }
+    } else {
+        // clear account inputs
+        $('#modalEditNhanVien input[name="Account.Id"]').val('');
+        $('#modalEditNhanVien input[name="Account.Username"]').val('');
+        $('#modalEditNhanVien input[name="Account.Password"]').val('');
+        $('#modalEditNhanVien select[name="Account.Role"]').val('');
+        $roleSelect.val('');
+    }
     $('#modalEditNhanVien').modal('show');
     
     setTimeout(() => $('#IdEditPhongBan').val(phongBanId), 300);
